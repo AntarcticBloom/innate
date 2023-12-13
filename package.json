@@ -1,0 +1,30 @@
+{
+  "name": "innate",
+  "version": "0.0.1",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "bun-types": "latest",
+    "commander": "^11.1.0",
+    "concurrently": "^8.2.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "dev": "bun scripts/dev.ts",
+    "dev:introspect-db": "prisma db pull",
+    "dev:create-db": "bun scripts/createDb.ts",
+    "dev:prisma:generate": "prisma generate",
+    "test": "bun test --preload ./setup-tests.ts",
+    "test:debug": "DEBUG=true bun test --preload ./setup-tests.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "5.7.0",
+    "chalk": "^5.3.0",
+    "dotenv": "^16.3.1",
+    "node-postgres": "^0.6.2",
+    "prisma": "^5.7.0",
+    "strip-ansi": "^7.1.0"
+  }
+}
