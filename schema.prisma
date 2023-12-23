@@ -1,12 +1,27 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+generator typegraphql {
+  provider           = "typegraphql-prisma"
+  output             = "./src/generated/type-graphql"
+  emitTranspiledCode = "false"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["innate", "public"]
 }
 
-model user {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+model administrators {
+  id         String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
+  password   String
+  email      String   @unique
+  username   String   @unique
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+
+  @@schema("innate")
 }

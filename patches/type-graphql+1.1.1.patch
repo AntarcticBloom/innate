@@ -1,0 +1,13 @@
+diff --git a/node_modules/type-graphql/dist/metadata/utils.js b/node_modules/type-graphql/dist/metadata/utils.js
+index 577b70f..01ef614 100644
+--- a/node_modules/type-graphql/dist/metadata/utils.js
++++ b/node_modules/type-graphql/dist/metadata/utils.js
+@@ -37,7 +37,7 @@ function mapMiddlewareMetadataToArray(metadata) {
+ exports.mapMiddlewareMetadataToArray = mapMiddlewareMetadataToArray;
+ function ensureReflectMetadataExists() {
+     if (typeof Reflect !== "object" ||
+-        typeof Reflect.decorate !== "function" ||
++        // typeof Reflect.decorate !== "function" ||
+         typeof Reflect.metadata !== "function") {
+         throw new errors_1.ReflectMetadataMissingError();
+     }

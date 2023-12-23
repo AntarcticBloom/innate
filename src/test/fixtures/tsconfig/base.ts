@@ -1,8 +1,6 @@
+export const BASE_TS_CONFIG = /* JSON */ `
 {
   "compilerOptions": {
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-
     "lib": ["ESNext"],
     "module": "esnext",
     "target": "esnext",
@@ -22,5 +20,7 @@
       "bun-types" // add Bun global
     ]
   },
-  "include": ["src", "package.json", "setup-tests.ts"]
+  "include": ["src", "package.json"]
 }
+
+`
