@@ -5,7 +5,7 @@ import {
 } from '../../utils'
 import postgres from 'postgres'
 import pkg from '../../../package.json'
-import { stdout } from '../utils/debug'
+import { stdout } from '../../utils/cli/debug'
 import { generateEnv } from '../../utils/generateEnv'
 import { DebugLevel } from '../../utils/errors/types'
 

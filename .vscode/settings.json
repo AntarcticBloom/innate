@@ -1,0 +1,16 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "workbench.colorCustomizations": {
+    "statusBar.foreground": "#FF0056",
+    "activityBar.foreground": "#FF0056",
+    "activityBar.activeForeground": "#FF0056",
+    "menu.foreground": "#FF0056",
+    "icon.foreground": "#FF0056",
+    "button.foreground": "#FF0056",
+    "badge.foreground": "#FF0056",
+    "sideBar.foreground": "#FF0056",
+    "breadcrumb.foreground": "#FF0056",
+    "banner.foreground": "#FF0056",
+    "quickInput.foreground": "#FF0056"
+  }
+}

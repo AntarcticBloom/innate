@@ -1,4 +1,4 @@
-import { DebugLevel } from '../../utils/errors/types'
+import { DebugLevel } from '../errors/types'
 
 export type CLIOptions = {
   debug: DebugLevel

@@ -1,8 +1,9 @@
 import { Command } from 'commander'
 import pkg from '../../package.json'
-import { stdout } from './utils/debug'
+import { DebugLevel } from '../utils'
+import { stdout } from '../utils/cli/debug'
 import { createDb } from './handlers/createDb'
-import { parseDebugLevel, parseCommandInt } from './utils'
+import { parseDebugLevel, parseCommandInt } from '../utils/cli'
 
 const program = new Command()
 
@@ -10,12 +11,7 @@ program
   .name('createDb')
   .description('Generates a GraphQL API from the connected database schema')
   .version(pkg.version)
-  .requiredOption(
-    '-d, --debug <number>',
-    'Run in debug mode',
-    parseDebugLevel,
-    1,
-  )
+  .requiredOption('-d, --debug <number>', 'Set debug level', parseDebugLevel, 1)
   .requiredOption(
     '--spawn-level <number>',
     'Set the spawn level, so that error handling can happen on the appropriate process. 0 indicates the progenitor process.',
@@ -26,7 +22,7 @@ program
 
 const { debug, spawnLevel } = program.opts()
 
-if (debug) await stdout('👾 Running `createDb` in debug mode')
+if (debug <= DebugLevel.Info) await stdout('👾 Running `createDb`')
 
 await createDb({
   debug,

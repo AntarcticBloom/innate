@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { memoizedHeading } from './headingSeparator'
-import { stderr } from '../../../scripts/utils/debug'
+import { stderr } from '../../cli/debug'
 
 export const prettyPrintErrorResolutions = async (resolutions: string[]) => {
   await stderr('\n')

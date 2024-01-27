@@ -1,19 +1,16 @@
 import 'core-js/proposals'
 import 'reflect-metadata'
 
+import path from 'path'
 import { Command } from 'commander'
 import pkg from '../../package.json'
-import { stdout } from './utils/debug'
-import type { CLIOptions } from './utils/types'
-import { generateApi } from './handlers/generateApi'
-import { introspectDb } from './handlers/introspectDb'
-import { parseCommandInt, parseDebugLevel } from './utils'
-
-import { createYoga, useReadinessCheck } from 'graphql-yoga'
-import { buildSchema } from 'type-graphql'
-import { resolvers } from '../generated/type-graphql'
-import path from 'path'
-import { PrismaClient } from '@prisma/client'
+import { DebugLevel } from '../utils'
+import { stdout } from '../utils/cli/debug'
+import type { CLIOptions } from '../utils/cli/types'
+import { parseCommandInt, parseDebugLevel } from '../utils/cli'
+import { waitForHealthcheck } from '../test/utils/waitForHealthcheck'
+import { startUI, startServer, generateApi, introspectDb } from './handlers'
+import { syncModels } from './handlers/syncModels'
 
 const program = new Command()
 
@@ -36,45 +33,17 @@ program
   .parse()
 ;(async () => {
   const options = program.opts<CLIOptions>()
-
   options.cwd = path.join(import.meta.dir, '../../')
 
-  await stdout('👾 Running `dev` in debug mode\n')
+  if (options.debug <= DebugLevel.Info) await stdout('👾 Running `dev`\n')
 
   await introspectDb(options)
   await generateApi()
 
-  const prisma = new PrismaClient()
+  await syncModels({ debug: options.debug })
 
-  type Context = {
-    prisma: PrismaClient
-  }
+  startServer({ debug: options.debug })
 
-  const schema = await buildSchema({
-    resolvers,
-    validate: false,
-  })
-
-  const yoga = createYoga<{}, Context>({
-    schema,
-    context: async () => ({ prisma }),
-    plugins: [
-      useReadinessCheck({
-        endpoint: '/healthcheck',
-        check: async () => {
-          stdout('🎯 Health check endpoint hit')
-          return true
-        },
-      }),
-    ],
-  })
-
-  const server = Bun.serve({ development: true, fetch: yoga })
-
-  stdout(
-    `💁 Server is running on ${new URL(
-      yoga.graphqlEndpoint,
-      `http://${server.hostname}:${server.port}`,
-    )} - PID: ${process.pid}`,
-  )
+  await waitForHealthcheck()
+  await startUI({ debug: options.debug })
 })()

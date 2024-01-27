@@ -3,7 +3,7 @@ import pkg from '../../../../package.json'
 import { stdout } from '../../../utils/cli/debug'
 import { DebugLevel } from '../../../utils'
 
-export const initAdministrators = async ({
+export const initUsers = async ({
   debugLevel,
   spawnLevel,
   connection,
@@ -15,13 +15,13 @@ export const initAdministrators = async ({
   debugLevel: DebugLevel
 }) => {
   if (debugLevel <= DebugLevel.Info)
-    await stdout('👑 Initializing Administrators table...')
+    await stdout('👨‍💻 Initializing Users table...')
 
   try {
     await connection.unsafe(/* sql */ `
       SET search_path TO ${schema}; -- Execute on the system schema
 
-      CREATE TABLE IF NOT EXISTS Administrator (
+      CREATE TABLE IF NOT EXISTS "User" (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         
         hash TEXT NOT NULL,
@@ -36,7 +36,7 @@ export const initAdministrators = async ({
   `)
 
     if (debugLevel <= DebugLevel.Info)
-      stdout(`✅ Initialized Administrators table in ${schema} schema`)
+      stdout(`✅ Initialized Users table in ${schema} schema`)
   } catch (error) {
     console.log({ error })
   }

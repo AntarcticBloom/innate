@@ -1,4 +1,4 @@
-import { DebugLevel } from '../../utils'
+import { DebugLevel } from '..'
 
 export const parseDebugLevel = (debugLevel: string): DebugLevel => {
   const parsedDebugLevel = parseInt(debugLevel)

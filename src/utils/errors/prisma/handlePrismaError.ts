@@ -13,8 +13,8 @@ import { DebugLevel } from '../types'
 import pkg from '../../../../package.json'
 import { type Env } from '../../generateEnv'
 import { type OptionValues } from 'commander'
-import { stdout } from '../../../scripts/utils/debug'
-import { CLIOptions } from '../../../scripts/utils/types'
+import { stdout } from '../../cli/debug'
+import { CLIOptions } from '../../cli/types'
 
 type ErrorDrivenCodepath = {
   description: string
@@ -42,7 +42,7 @@ const errorDrivenCodepaths: ErrorDrivenCodepaths = {
           `--cwd=${cwd}`,
           'run',
           'create-db',
-          debug ? '--debug' : '--no-debug',
+          `--debug=${debug}`,
           `--spawn-level=${spawnLevel + 1}`,
         ],
         {
@@ -83,7 +83,7 @@ const errorDrivenCodepaths: ErrorDrivenCodepaths = {
           `--cwd=${cwd}`,
           'run',
           'init-db',
-          debug ? '--debug' : '--no-debug',
+          `--debug=${debug}`,
           `--spawn-level=${spawnLevel + 1}`,
         ],
         {

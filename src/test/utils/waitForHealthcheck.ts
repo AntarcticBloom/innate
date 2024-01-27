@@ -1,4 +1,4 @@
-import { stdout } from '../../scripts/utils/debug'
+import { stdout } from '../../utils/cli/debug'
 
 export const waitForHealthcheck = async (
   initialTimeout: number = 2000,

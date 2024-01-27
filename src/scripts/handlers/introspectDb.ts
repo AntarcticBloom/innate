@@ -4,9 +4,9 @@ import {
   PrismaErrorCodes,
   handlePrismaCliError,
 } from '../../utils/errors'
-import { stdout } from '../utils/debug'
+import { stdout } from '../../utils/cli/debug'
 import { generateEnv } from '../../utils'
-import type { CLIOptions } from '../utils/types'
+import type { CLIOptions } from '../../utils/cli/types'
 import { DebugLevel } from '../../utils/errors/types'
 
 /**
