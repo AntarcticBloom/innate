@@ -1,6 +1,8 @@
+import fs from 'fs'
 import {
   createYoga,
   useReadinessCheck,
+  YogaServerInstance,
   type YogaInitialContext,
 } from 'graphql-yoga'
 import { stdout } from '../../../utils/cli/debug'
@@ -11,12 +13,13 @@ import { useCookies } from '@whatwg-node/server-plugin-cookies'
 import { publicSchema, administrativeSchema } from '../../../graphql/schema'
 
 export const startServer = async ({ debug }: { debug: number }) => {
+  const env = generateEnv()
   const prisma = new PrismaClient()
 
   const baseYogaProps = {
     context: async (ctx: YogaInitialContext) => ({
+      env,
       prisma,
-      env: generateEnv(),
       ...ctx,
     }),
     plugins: [
@@ -41,10 +44,33 @@ export const startServer = async ({ debug }: { debug: number }) => {
     ...baseYogaProps,
   })
 
-  const adminServer = Bun.serve({
-    port: 3001,
+  const instantiateServer = ({
+    serverInstance,
+    config: { port, useTLS },
+  }: {
+    serverInstance: YogaServerInstance<{}, Context>
+    config: {
+      port: string
+      useTLS: boolean
+    }
+  }) => ({
+    port: port,
     development: true,
-    fetch: (req) => {
+    ...(useTLS
+      ? {
+          tls: {
+            key: Bun.file(`${process.cwd()}/certs/innate.test.key`),
+            cert: Bun.file(`${process.cwd()}/certs/innate.test.crt`),
+          },
+        }
+      : {}),
+    fetch: (req: Request) => {
+      const { url } = req
+      const { pathname } = new URL(
+        url,
+        `http://${server.hostname}:${server.port}`,
+      )
+
       // TODO: extend Bun server here
       // TODO: https://linear.app/antarcticbloom/issue/AB-17/configurable-cors
 
@@ -56,25 +82,13 @@ export const startServer = async ({ debug }: { debug: number }) => {
         'Access-Control-Allow-Methods',
         'GET, POST, PUT, DELETE, OPTIONS',
       )
-      return adminYoga(req, res)
-    },
-  })
-
-  const server = Bun.serve({
-    development: true,
-    fetch: (req) => {
-      // TODO: extend Bun server here
-
-      const { url } = req
-      const { pathname } = new URL(
-        url,
-        `http://${server.hostname}:${server.port}`,
-      )
-      const res = new Response(JSON.stringify(Prisma.dmmf.datamodel.models))
+      res.headers.set('Access-Control-Allow-Credentials', 'true')
 
       // TODO: secure this endpoint; data model meta format must only be accessible to admin UI
       if (pathname === '/dmmf') {
         // TODO: https://linear.app/antarcticbloom/issue/AB-17/configurable-cors
+        const res = new Response(JSON.stringify(Prisma.dmmf.datamodel.models))
+
         res.headers.set('Access-Control-Allow-Origin', '*')
         res.headers.set(
           'Access-Control-Allow-Methods',
@@ -84,21 +98,58 @@ export const startServer = async ({ debug }: { debug: number }) => {
         return res
       }
 
-      return yoga(req)
+      return serverInstance(req, res)
     },
   })
 
+  const adminWebServer = Bun.serve(
+    instantiateServer({
+      serverInstance: adminYoga,
+      config: {
+        useTLS: true,
+        port: env.ADMIN_SERVER_PORT_WEB,
+      },
+    }),
+  )
+
+  const adminNativeServer = Bun.serve(
+    instantiateServer({
+      serverInstance: adminYoga,
+      config: {
+        useTLS: false,
+        port: env.ADMIN_SERVER_PORT_NATIVE,
+      },
+    }),
+  )
+
+  const server = Bun.serve(
+    instantiateServer({
+      serverInstance: yoga,
+      config: {
+        useTLS: true,
+        port: env.SERVER_PORT,
+      },
+    }),
+  )
+
   stdout(
-    `💁 Admin Server is listening at ${new URL(
+    `💁 Admin Server for Web is listening at ${new URL(
       yoga.graphqlEndpoint,
-      `http://${adminServer.hostname}:${adminServer.port}`,
+      adminWebServer.url,
     )}`,
   )
 
   stdout(
-    `💁 Server is listening at ${new URL(
+    `💁 Admin Server for Native is listening at ${new URL(
       yoga.graphqlEndpoint,
-      `http://${server.hostname}:${server.port}`,
+      adminNativeServer.url,
+    )}`,
+  )
+
+  stdout(
+    `💁 Server for clients is listening at ${new URL(
+      yoga.graphqlEndpoint,
+      server.url,
     )}`,
   )
 }

@@ -23,13 +23,13 @@ export const initAdministrators = async ({
 
       CREATE TABLE IF NOT EXISTS Administrator (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        
         hash TEXT NOT NULL,
         salt TEXT NOT NULL,
         magic_link_token TEXT,
         email TEXT NOT NULL UNIQUE,
         banned BOOLEAN DEFAULT FALSE,
         username TEXT NOT NULL UNIQUE,
+        verified BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
       );

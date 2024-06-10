@@ -7,6 +7,7 @@ import { JwtPayload } from 'jsonwebtoken'
 import { LogOutResolver } from './LogOutResolver'
 import type { PrismaClient } from '@prisma/client'
 import type { Context } from '../../types/Context'
+import { User } from '../../generated/type-graphql'
 import { cookieNames } from '../utility/cookieNames'
 import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
 import type { Administrator } from '../../generated/type-graphql'
@@ -15,7 +16,7 @@ import { RefreshAccessTokenResolver } from './RefreshAccessTokenResolver'
 
 @Resolver()
 export abstract class AuthenticateAdministratorResolver {
-  @Mutation(() => Boolean, { nullable: false })
+  @Mutation(() => User, { nullable: false })
   async authenticateAdministrator(
     @Arg('AuthenticateAdministratorInput', {
       nullable: false,
@@ -23,7 +24,7 @@ export abstract class AuthenticateAdministratorResolver {
     })
     { email, password }: AuthenticateUserInput,
     @Ctx() { prisma, request, env }: Context,
-  ): Promise<boolean> {
+  ): Promise<User> {
     const existingRefreshToken = (
       await request.cookieStore?.get(cookieNames.refresh)
     )?.value
@@ -51,7 +52,7 @@ export abstract class AuthenticateAdministratorResolver {
       }
 
       if (!isRevoked && validToken)
-        throw new GraphQLError('User is already authenticated.')
+        return await this.getAdministrator({ prisma, email })
     }
 
     const user = await this.getAdministrator({
@@ -82,7 +83,7 @@ export abstract class AuthenticateAdministratorResolver {
 
     this.issueCookie({ refreshToken, request })
 
-    return true
+    return user
   }
 
   private async getAdministrator({
@@ -92,6 +93,7 @@ export abstract class AuthenticateAdministratorResolver {
     prisma: PrismaClient
     email: string
   }): Promise<Administrator> | never {
+    console.log({ email })
     const administrator = await prisma.administrator.findUnique({
       where: {
         email,
@@ -115,6 +117,8 @@ export abstract class AuthenticateAdministratorResolver {
     input: string
   }): Promise<true> | never {
     const passwordMatches = await Bun.password.verify(`${salt}${input}`, hash)
+
+    console.log({ passwordMatches })
 
     if (!passwordMatches) {
       throw new GraphQLError('Unable to find user with provided credentials.')
@@ -160,10 +164,10 @@ export abstract class AuthenticateAdministratorResolver {
   }) {
     const options = {
       path: '/',
-      secure: true,
       httpOnly: true,
-      sameSite: 'lax' as const,
+      sameSite: false,
       expires: dayjs().add(7, 'day').toDate(),
+      secure: process.env.NODE_ENV === 'production',
 
       domain: (() => {
         // TODO: Make this configurable via .env

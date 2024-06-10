@@ -1,32 +1,23 @@
 import { GraphQLError } from 'graphql'
 import { timingSafeEqual } from 'crypto'
-import type { Context } from '../../types/Context'
 import type { PrismaClient } from '@prisma/client'
-import { User } from '../../generated/type-graphql'
+import type { Context } from '../../types/Context'
 import { InputValidator } from '../utility/InputValidator'
 import { Resolver, Mutation, Arg, Ctx } from 'type-graphql'
+import { Administrator } from '../../generated/type-graphql'
+import { VerifyAdministratorEmailInput } from '../types/VerifyAdministratorEmailInput'
 
 @Resolver()
-export abstract class VerifyEmailAddressResolver {
-  @Mutation(() => User, { nullable: false })
-  async verifyEmailAddress(
-    @Arg('email', {
+export abstract class VerifyAdministratorEmailResolver {
+  @Mutation(() => Boolean, { nullable: false })
+  async verifyAdministratorEmail(
+    @Arg('VerifyAdministratorEmailInput', {
       nullable: false,
-      description: 'The email address to verify',
-      validate: true,
     })
-    email: string,
-
-    @Arg('token', {
-      nullable: false,
-      description:
-        'The JWT encoded for use in the email address confirmation email',
-      validate: true,
-    })
-    token: string,
+    { email, token }: VerifyAdministratorEmailInput,
 
     @Ctx() { prisma, request }: Context,
-  ): Promise<User> {
+  ): Promise<boolean> {
     const decodedEmail = decodeURIComponent(email)
 
     /**
@@ -36,7 +27,7 @@ export abstract class VerifyEmailAddressResolver {
     InputValidator.validateEmail(decodedEmail, request)
     const tokenPayload = InputValidator.verifyJWT(token, request)
 
-    const userToUpdate = await prisma.user.findUnique({
+    const userToUpdate = await prisma.administrator.findUnique({
       where: {
         id: tokenPayload.id,
       },
@@ -44,12 +35,12 @@ export abstract class VerifyEmailAddressResolver {
 
     try {
       this.validateInput(userToUpdate, token, decodedEmail)
-      const user = await this.updateUser(tokenPayload, prisma)
-      await this.invalidateSingleUseToken(user, prisma)
-      return user
+      const administrator = await this.updateUser(tokenPayload, prisma)
+      await this.invalidateSingleUseToken(administrator, prisma)
+      return true
     } catch (error: any) {
       /**
-       * If a user can be identified, ensure they can only use this
+       * If a administrator can be identified, ensure they can only use this
        * mutation once before going back and having to reissue
        * themselves another token.
        */
@@ -60,13 +51,13 @@ export abstract class VerifyEmailAddressResolver {
   }
 
   private validateInput(
-    userToUpdate: User | null,
+    userToUpdate: Administrator | null,
     token: string,
     email: string,
   ): void | never {
     if (!userToUpdate) {
-      throw new Error(
-        `Unable to find user specified in magic link. Was the user deleted recently?`,
+      throw new GraphQLError(
+        `Unable to find administrator specified in magic link. Was the administrator deleted recently?`,
       )
     }
 
@@ -89,19 +80,19 @@ export abstract class VerifyEmailAddressResolver {
         Buffer.from(userToUpdate.magic_link_token),
       )
     ) {
-      throw new Error(
+      throw new GraphQLError(
         'Token in magic link does not match the one that was most recently issued',
       )
     }
   }
 
   private async invalidateSingleUseToken(
-    user: User,
+    administrator: Administrator,
     prisma: PrismaClient,
   ): Promise<void> {
-    await prisma.user.update({
+    await prisma.administrator.update({
       where: {
-        id: user.id,
+        id: administrator.id,
       },
       data: {
         magic_link_token: null,
@@ -115,14 +106,14 @@ export abstract class VerifyEmailAddressResolver {
    * @param email
    * @param prisma
    *
-   * @description Ensure the user from the email address arg and the token
+   * @description Ensure the administrator from the email address arg and the token
    * payload is one and the same.
    */
   private async updateUser(
     tokenPayload: any,
     prisma: PrismaClient,
-  ): Promise<User> {
-    return await prisma.user.update({
+  ): Promise<Administrator> {
+    return await prisma.administrator.update({
       where: {
         id: tokenPayload.id,
       },

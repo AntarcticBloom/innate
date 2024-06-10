@@ -13,6 +13,9 @@ export abstract class AdministratorRegistrationInput
 
   @Field((_type) => String, { nullable: false })
   password: string
+
+  @Field((_type) => String, { nullable: true })
+  initialAdministratorSecret?: string
 }
 
 @InputType()

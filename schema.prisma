@@ -23,6 +23,7 @@ model administrator {
   email            String   @unique
   banned           Boolean? @default(false)
   username         String   @unique
+  verified         Boolean? @default(false)
   created_at       DateTime @default(now()) @db.Timestamp(6)
   updated_at       DateTime @default(now()) @db.Timestamp(6)
 
@@ -73,6 +74,7 @@ model User {
   email            String   @unique
   banned           Boolean? @default(false)
   username         String   @unique
+  verified         Boolean? @default(false)
   created_at       DateTime @default(now()) @db.Timestamp(6)
   updated_at       DateTime @default(now()) @db.Timestamp(6)
 

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import cookie from 'cookie'
 import { GraphQLError } from 'graphql'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { LogOutResolver } from './LogOutResolver'
@@ -22,7 +23,7 @@ abstract class AuthenticateUserInput implements Partial<User> {
 
 @Resolver()
 export abstract class AuthenticateUserResolver {
-  @Mutation(() => Boolean, { nullable: false })
+  @Mutation(() => User, { nullable: false })
   async authenticateUser(
     @Arg('AuthenticateUserInput', {
       nullable: false,
@@ -30,8 +31,8 @@ export abstract class AuthenticateUserResolver {
       validate: true,
     })
     { email, password }: AuthenticateUserInput,
-    @Ctx() { prisma, request }: Context,
-  ): Promise<boolean> {
+    @Ctx() { prisma, request, env }: Context,
+  ): Promise<User> {
     const existingRefreshToken = (
       await request.cookieStore?.get(cookieNames.refresh)
     )?.value
@@ -47,7 +48,7 @@ export abstract class AuthenticateUserResolver {
       let validToken: JwtPayload | null
       try {
         validToken = RefreshAccessTokenResolver.verifyToken({
-          request,
+          env,
           token: existingRefreshToken,
         })
       } catch (error) {
@@ -72,19 +73,23 @@ export abstract class AuthenticateUserResolver {
      * string | undefined, likely because it is omitted
      * from the SDL schema
      */
-    if (!user.password) {
+    if (!user.hash) {
       console.error('Hash undefined')
-      throw new ErrorWithProps('An unknown error occurred')
+      throw new GraphQLError('An unknown error occurred')
     }
     /* c8 ignore stop */
 
-    await this.comparePasswords(password, user.password)
+    await this.comparePasswords({
+      salt: user.salt,
+      hash: user.hash,
+      input: password,
+    })
 
     const refreshToken = this.signRefreshJWT(user)
 
-    this.issueCookie(refreshToken, res)
+    this.issueCookie({ refreshToken, request })
 
-    return true
+    return user
   }
 
   private async getUser({
@@ -101,20 +106,25 @@ export abstract class AuthenticateUserResolver {
     })
 
     if (!user) {
-      throw new ErrorWithProps('Unable to find user with provided credentials.')
+      throw new GraphQLError('Unable to find user with provided credentials.')
     }
 
     return user
   }
 
-  private async comparePasswords(
-    input: string,
-    hash: string,
-  ): Promise<true> | never {
-    const passwordMatches = await bcrypt.compare(input, hash)
+  private async comparePasswords({
+    hash,
+    salt,
+    input,
+  }: {
+    hash: string
+    salt: string
+    input: string
+  }): Promise<true> | never {
+    const passwordMatches = await Bun.password.verify(`${salt}${input}`, hash)
 
     if (!passwordMatches) {
-      throw new ErrorWithProps('Unable to find user with provided credentials.')
+      throw new GraphQLError('Unable to find user with provided credentials.')
     }
 
     return true
@@ -130,29 +140,35 @@ export abstract class AuthenticateUserResolver {
     })
   }
 
-  private issueCookie(refreshToken: string, res: FastifyReply) {
-    const options: CookieSerializeOptions = {
+  private async issueCookie({
+    request,
+    refreshToken,
+  }: {
+    request: Request
+    refreshToken: string
+  }) {
+    const options = {
       path: '/',
       secure: true,
       httpOnly: true,
       sameSite: 'lax' as const,
+      expires: dayjs().add(7, 'day').toDate(),
+
       domain: (() => {
+        // TODO: Make this configurable via .env
         switch (true) {
-          case process.env.NODE_ENV === 'production':
-            return 'bedbug.app'
-
-          case process.env.NEXT_PUBLIC_ETC_HOSTS === 'true':
-            return 'bedbug.com'
-
           default:
             return 'localhost'
         }
       })(),
     }
 
-    res.setCookie(cookieNames.refresh, refreshToken, {
-      ...options,
-      expires: dayjs().add(7, 'day').toDate(),
-    })
+    const serialized = cookie.serialize(
+      cookieNames.refresh,
+      refreshToken,
+      options,
+    )
+
+    await request.cookieStore?.set(cookieNames.refresh, serialized)
   }
 }

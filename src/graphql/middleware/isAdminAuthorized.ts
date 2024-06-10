@@ -45,13 +45,11 @@ export const unsignCookie = async ({
   cookieName: string
   request: YogaInitialContext['request']
 }) => {
-  const cookie = await request.cookieStore?.get(cookieName)
+  const cookie = (await request.cookieStore?.get(cookieNames.access))?.value
 
-  if (!cookie) {
-    throw new GraphQLError(`Unauthorized - no ${cookieName} cookie`)
-  }
+  if (!cookie) throw new GraphQLError(`Unauthorized - no ${cookieName} cookie`)
 
-  return cookie.value
+  return cookie
 }
 
 export const isAdminAuthorized: AuthChecker<Context> = async (
@@ -60,10 +58,12 @@ export const isAdminAuthorized: AuthChecker<Context> = async (
 ): Promise<boolean> => {
   const { request, prisma, env } = context
 
-  const token = await unsignCookie({
+  const cookieValue = await unsignCookie({
     request,
     cookieName: cookieNames.access,
   })
+
+  const token = cookie.parse(cookieValue)[cookieNames.access]
 
   try {
     const { id }: JwtPayload = jwt.verify(token, env.TOKEN_SECRET) as JwtPayload

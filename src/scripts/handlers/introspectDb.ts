@@ -7,7 +7,6 @@ import {
 import { stdout } from '../../utils/cli/debug'
 import { generateEnv } from '../../utils'
 import type { CLIOptions } from '../../utils/cli/types'
-import { DebugLevel } from '../../utils/errors/types'
 
 /**
  * Uses error-driven codepaths to recursively try introspecting the database

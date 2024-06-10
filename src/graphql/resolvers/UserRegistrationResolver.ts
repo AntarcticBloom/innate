@@ -3,7 +3,7 @@ import { Context } from '../../types/Context'
 import { User } from '../../generated/type-graphql'
 import { InputValidator } from '../utility/InputValidator'
 import { Mutation, Resolver, Arg, Field, InputType, Ctx } from 'type-graphql'
-import { SendUserConfirmationEmailResolver } from './SendUserConfirmationEmailResolver'
+import { SendUserConfirmationEmailResolver } from './SendUserVerificationEmailResolver'
 
 @InputType()
 abstract class UserRegistrationInput {

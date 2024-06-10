@@ -30,6 +30,7 @@ export const initUsers = async ({
         email TEXT NOT NULL UNIQUE,
         banned BOOLEAN DEFAULT FALSE,
         username TEXT NOT NULL UNIQUE,
+        verified BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
       );

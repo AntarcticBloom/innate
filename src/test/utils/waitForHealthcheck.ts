@@ -7,12 +7,13 @@ export const waitForHealthcheck = async (
   let exponentialBackoff = initialTimeout
 
   try {
-    const response = await fetch('http://localhost:3000/healthcheck')
+    const response = await fetch('https://localhost:3001/healthcheck')
     if (response.ok) return true
 
     exponentialBackoff = exponentialBackoff * 2
     return await retry(exponentialBackoff)
   } catch (error) {
+    console.log({ error })
     exponentialBackoff = exponentialBackoff * 2
     return await retry(exponentialBackoff)
   }

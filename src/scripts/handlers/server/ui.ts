@@ -1,7 +1,7 @@
-import { stdout } from '../../../utils/cli/debug'
-import { DebugLevel } from '../../../utils'
+import { DebugLevel, stdout, generateUIEnv } from '../../../utils'
 
 export const startUI = async ({ debug }: { debug: DebugLevel }) => {
+  await generateUIEnv()
   if (debug <= DebugLevel.Info) await stdout('👾 Starting UI...\n')
 
   Bun.spawn(['bun', 'run', 'start'], {

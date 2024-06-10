@@ -13,15 +13,17 @@ import { Administrator } from '../../generated/type-graphql'
 @Resolver()
 export abstract class RefreshAdministratorAccessTokenResolver {
   @Mutation(() => Boolean)
-  async refreshAccessToken(
+  async refreshAdministratorAccessToken(
     @Ctx() { prisma, request, env }: Context,
   ): Promise<boolean> {
+    const allCookies = await request.cookieStore?.getAll()
+
     const refreshToken = (await request.cookieStore?.get(cookieNames.refresh))
       ?.value
 
     if (!refreshToken) throw new GraphQLError('Unauthorized - no refresh token')
 
-    const token = cookie.parse(refreshToken).refresh
+    const token = cookie.parse(refreshToken)[cookieNames.refresh]
 
     const tokenPayload = RefreshAdministratorAccessTokenResolver.verifyToken({
       env,
@@ -154,17 +156,19 @@ export abstract class RefreshAdministratorAccessTokenResolver {
   }) {
     const options = {
       path: '/',
-      secure: true,
       signed: true,
       httpOnly: true,
-      sameSite: 'lax' as const,
+      sameSite: 'none' as const,
       expires: dayjs().add(10, 'second').toDate(),
+      secure: process.env.NODE_ENV === 'production',
     }
-    const serialized = cookie.serialize(
+
+    const accessCookie = cookie.serialize(
       cookieNames.access,
       accessToken,
       options,
     )
-    await request.cookieStore?.set(cookieNames.access, accessToken)
+
+    await request.cookieStore?.set(cookieNames.access, accessCookie)
   }
 }

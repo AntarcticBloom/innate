@@ -1,6 +1,7 @@
 .env
 example
 src/generated
+certs/**
 
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 

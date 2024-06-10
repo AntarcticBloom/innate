@@ -1,9 +1,13 @@
 export * from './LogOutResolver'
 export * from './RefreshAccessTokenResolver'
+export * from './AdministratorsExistResolver'
 export * from './CurrentAdministratorResolver'
+export * from './SendUserVerificationEmailResolver'
 export * from './AdministratorRegistrationResolver'
 export * from './AuthenticateAdministratorResolver'
+export * from './SendAdminVerificationEmailResolver'
 export * from './RefreshAdministratorAccessTokenResolver'
+export * from './VerifyAdministratorEmailAddressResolver'
 
 // export * from './AuthenticateUserResolver'
 // export * from './SendUserConfirmationEmailResolver'

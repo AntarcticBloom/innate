@@ -8,7 +8,7 @@ import { type Context } from '../../types/Context'
 import { InputValidator } from '../utility/InputValidator'
 import { Mutation, Resolver, Arg, Ctx } from 'type-graphql'
 import { Administrator } from '../../generated/type-graphql'
-import { SendUserConfirmationEmailResolver } from './SendUserConfirmationEmailResolver'
+import { SendAdminVerificationEmailResolver } from './SendAdminVerificationEmailResolver'
 
 @Resolver()
 export abstract class AdministratorRegistrationResolver {
@@ -18,15 +18,28 @@ export abstract class AdministratorRegistrationResolver {
       nullable: false,
       description: 'Register a new administrator',
     })
-    { username, email, password }: AdministratorRegistrationInput,
+    {
+      username,
+      email,
+      password,
+      initialAdministratorSecret,
+    }: AdministratorRegistrationInput,
 
     @Ctx() context: Context,
   ): Promise<Administrator> {
-    const { request } = context
+    const { request, env, prisma } = context
 
     InputValidator.validateEmail(email, request)
     InputValidator.validatePassword(password, request)
     InputValidator.validateDisplayName(username, request)
+
+    const administratorsCount = await prisma.administrator.count()
+    if (
+      administratorsCount === 0 &&
+      initialAdministratorSecret !== env.INITIAL_ADMINISTRATOR_SECRET
+    ) {
+      throw new GraphQLError('Initial administrator secret is incorrect')
+    }
 
     const salt = randomBytes(16).toString('base64')
     const hash = await Bun.password.hash(`${salt}${password}`)
@@ -60,11 +73,10 @@ export abstract class AdministratorRegistrationResolver {
       },
     })
 
-    // TODO: Nodemailer
-    // await SendUserConfirmationEmailResolver.sendUserConfirmationEmail(
-    //   newAdministrator.email,
-    //   context,
-    // )
+    await SendAdminVerificationEmailResolver.sendAdminVerificationEmail(
+      newAdministrator.email,
+      context,
+    )
 
     return newAdministrator
   }

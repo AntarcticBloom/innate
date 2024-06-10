@@ -92,7 +92,7 @@ export abstract class InputValidator {
 
     if (error.message === 'jwt expired')
       throw new GraphQLError(
-        'JWT expired. Please send yourself another confirmation email and try again.',
+        'Token expired. Please send yourself another confirmation email and try again.',
       )
 
     if (error.message === 'invalid signature')
