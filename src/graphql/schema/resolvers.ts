@@ -11,7 +11,7 @@ import {
   RefreshAdministratorAccessTokenResolver,
 } from '../resolvers'
 
-import { CreateManyAdministratorResolver } from '../../generated/type-graphql'
+import { FindManyModelResolver } from '../../generated/type-graphql'
 
 import { type NonEmptyArray } from 'type-graphql'
 
@@ -25,6 +25,7 @@ export const publicResolvers: NonEmptyArray<Function> | NonEmptyArray<string> =
 export const administrativeResolvers:
   | NonEmptyArray<Function>
   | NonEmptyArray<string> = [
+  FindManyModelResolver,
   AdministratorExistsResolver,
   CurrentAdministratorResolver,
   VerifyAdministratorEmailResolver,

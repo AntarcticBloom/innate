@@ -21,7 +21,7 @@ export const initUsers = async ({
     await connection.unsafe(/* sql */ `
       SET search_path TO ${schema}; -- Execute on the system schema
 
-      CREATE TABLE IF NOT EXISTS "User" (
+      CREATE TABLE IF NOT EXISTS "user" (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         
         hash TEXT NOT NULL,

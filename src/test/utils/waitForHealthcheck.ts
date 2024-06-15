@@ -3,6 +3,8 @@ import { stdout } from '../../utils/cli/debug'
 export const waitForHealthcheck = async (
   initialTimeout: number = 2000,
 ): Promise<boolean> => {
+  await waitFor(initialTimeout)
+
   stdout('🏓 Pinging healthcheck with exponential backoff...')
   let exponentialBackoff = initialTimeout
 
@@ -11,19 +13,18 @@ export const waitForHealthcheck = async (
     if (response.ok) return true
 
     exponentialBackoff = exponentialBackoff * 2
-    return await retry(exponentialBackoff)
+    return await waitForHealthcheck(exponentialBackoff)
   } catch (error) {
     console.log({ error })
     exponentialBackoff = exponentialBackoff * 2
-    return await retry(exponentialBackoff)
-  }
 
-  function retry(timeout: number): Promise<boolean> {
-    return new Promise((resolve) =>
-      setTimeout(async () => {
-        const result: boolean = await waitForHealthcheck(timeout)
-        return resolve(result)
-      }, timeout),
-    )
+    if (exponentialBackoff > 30000)
+      throw new Error('Healthcheck failed after 30 seconds')
+
+    return await waitForHealthcheck(exponentialBackoff)
   }
+}
+
+function waitFor(timeout: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, timeout))
 }

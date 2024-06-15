@@ -21,7 +21,7 @@ export const initModels = async ({
     await connection.unsafe(/* sql */ `
       SET search_path TO ${schema}; -- Execute on the system schema
 
-      CREATE TABLE IF NOT EXISTS Schema (
+      CREATE TABLE IF NOT EXISTS schema (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
         name TEXT NOT NULL UNIQUE,
@@ -29,7 +29,7 @@ export const initModels = async ({
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
 
-      CREATE TABLE IF NOT EXISTS Model (
+      CREATE TABLE IF NOT EXISTS model (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         schema_id UUID REFERENCES Schema(id) ON DELETE CASCADE,
 
@@ -41,7 +41,7 @@ export const initModels = async ({
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
 
-      CREATE TABLE IF NOT EXISTS Field (
+      CREATE TABLE IF NOT EXISTS field (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         model_id UUID REFERENCES Model(id) ON DELETE CASCADE,
 
@@ -52,7 +52,7 @@ export const initModels = async ({
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
 
-      CREATE TABLE IF NOT EXISTS Revoked_Refresh_Token (
+      CREATE TABLE IF NOT EXISTS revoked_refresh_token (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
         value TEXT NOT NULL UNIQUE,

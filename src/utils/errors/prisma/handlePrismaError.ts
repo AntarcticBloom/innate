@@ -29,7 +29,12 @@ const errorDrivenCodepaths: ErrorDrivenCodepaths = {
   [PrismaErrorCodes.P1003]: {
     description: 'Database not found, create database',
     run: async ({ commandOptions: { debug, spawnLevel, cwd } }) => {
-      const env = generateEnv(path.join(import.meta.dir, '../../../../.env'))
+      const environment = process.env.NODE_ENV || 'development'
+
+      const env = generateEnv(
+        path.join(import.meta.dir, `../../../../.env.${environment}`),
+      )
+
       const { databaseName } = parseDatabaseConnectionString(env.DATABASE_URL)
 
       await stdout(
@@ -75,7 +80,11 @@ const errorDrivenCodepaths: ErrorDrivenCodepaths = {
     run: async ({ commandOptions: { debug, spawnLevel, cwd } }) => {
       await stdout(`🤔 Database empty.\n✏️  Creating ${pkg.name} tables...`)
 
-      const env = generateEnv(path.join(import.meta.dir, '../../../../.env'))
+      const environment = process.env.NODE_ENV || 'development'
+
+      const env = generateEnv(
+        path.join(import.meta.dir, `../../../../.env.${environment}`),
+      )
 
       const initDbProcess = Bun.spawnSync(
         [

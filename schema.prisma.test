@@ -24,10 +24,10 @@ datasource db {
 
 model administrator {
   id               String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
-  /// @TypeGraphQL.omit(output: true)
-  hash             String
-  /// @TypeGraphQL.omit(output: true)
-  salt             String
+  /// @TypeGraphQL.Field()
+hash             String
+  /// @TypeGraphQL.Field()
+salt             String
   magic_link_token String?
   email            String   @unique
   banned           Boolean? @default(false)
@@ -85,10 +85,10 @@ model schema {
 
 model user {
   id               String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
-  /// @TypeGraphQL.omit(output: true)
-  hash             String
-  /// @TypeGraphQL.omit(output: true)
-  salt             String
+  /// @TypeGraphQL.Field()
+hash             String
+  /// @TypeGraphQL.Field()
+salt             String
   magic_link_token String?
   email            String   @unique
   banned           Boolean? @default(false)

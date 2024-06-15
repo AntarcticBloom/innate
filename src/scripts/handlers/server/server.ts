@@ -1,12 +1,16 @@
-import fs from 'fs'
+import 'core-js/proposals'
+import 'reflect-metadata'
+
 import {
   createYoga,
   useReadinessCheck,
   YogaServerInstance,
   type YogaInitialContext,
 } from 'graphql-yoga'
+import nodemon from 'nodemon'
+import { configureCORS } from './cors'
+import { PrismaClient } from '@prisma/client'
 import { stdout } from '../../../utils/cli/debug'
-import { Prisma, PrismaClient } from '@prisma/client'
 import type { Context } from '../../../types/Context'
 import { DebugLevel, generateEnv } from '../../../utils'
 import { useCookies } from '@whatwg-node/server-plugin-cookies'
@@ -71,32 +75,8 @@ export const startServer = async ({ debug }: { debug: number }) => {
         `http://${server.hostname}:${server.port}`,
       )
 
-      // TODO: extend Bun server here
-      // TODO: https://linear.app/antarcticbloom/issue/AB-17/configurable-cors
-
       const res = new Response()
-
-      // TODO: https://linear.app/antarcticbloom/issue/AB-17/configurable-cors
-      res.headers.set('Access-Control-Allow-Origin', '*')
-      res.headers.set(
-        'Access-Control-Allow-Methods',
-        'GET, POST, PUT, DELETE, OPTIONS',
-      )
-      res.headers.set('Access-Control-Allow-Credentials', 'true')
-
-      // TODO: secure this endpoint; data model meta format must only be accessible to admin UI
-      if (pathname === '/dmmf') {
-        // TODO: https://linear.app/antarcticbloom/issue/AB-17/configurable-cors
-        const res = new Response(JSON.stringify(Prisma.dmmf.datamodel.models))
-
-        res.headers.set('Access-Control-Allow-Origin', '*')
-        res.headers.set(
-          'Access-Control-Allow-Methods',
-          'GET, POST, PUT, DELETE, OPTIONS',
-        )
-
-        return res
-      }
+      configureCORS(res)
 
       return serverInstance(req, res)
     },
@@ -153,3 +133,5 @@ export const startServer = async ({ debug }: { debug: number }) => {
     )}`,
   )
 }
+
+startServer({ debug: 0 })

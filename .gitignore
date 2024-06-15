@@ -1,4 +1,5 @@
 .env
+.env.development
 example
 src/generated
 certs/**

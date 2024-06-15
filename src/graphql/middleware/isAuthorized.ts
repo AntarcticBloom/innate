@@ -63,7 +63,6 @@ export const isAuthorized: AuthChecker<Context> = async (
 
     return await checkAuthorization(id, roles, prisma)
   } catch (error) {
-    console.log({ error })
     throw new GraphQLError('Unauthorized - invalid access token')
   }
 }
