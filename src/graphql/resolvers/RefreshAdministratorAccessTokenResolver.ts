@@ -114,7 +114,7 @@ export abstract class RefreshAdministratorAccessTokenResolver {
   }): Promise<boolean> {
     return (
       (
-        await prisma.revoked_refresh_token.findMany({
+        await prisma.revokedRefreshToken.findMany({
           where: {
             value: refreshToken,
           },

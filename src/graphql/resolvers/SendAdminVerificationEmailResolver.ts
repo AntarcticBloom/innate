@@ -21,8 +21,6 @@ export abstract class SendAdminVerificationEmailResolver {
 
     @Ctx() context: Context,
   ): Promise<boolean> {
-    console.log('😁 SendAdminVerificationEmailResolver hit')
-
     return await SendAdminVerificationEmailResolver.sendAdminVerificationEmail(
       email,
       context,
@@ -122,7 +120,7 @@ export abstract class SendAdminVerificationEmailResolver {
         id: userId,
       },
       data: {
-        magic_link_token: token,
+        magicLinkToken: token,
       },
     })
 

@@ -3,12 +3,13 @@ import { DebugLevel, stdout } from '../../utils'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { generateEnv } from '../../utils/generateEnv'
 import type { Relations } from '../../types/Relation'
+import { syncSchemaAnnotations } from './initDb/syncSchemaAnnotations'
 
 /**
  * Creates database records in schema.innate.models for all introspected models.
  * Used to power the UI.
  */
-export const syncModels = async ({ debug }: { debug: number }) => {
+export const syncTables = async ({ debug }: { debug: number }) => {
   if (debug <= DebugLevel.Info) stdout('🔄 Syncing models...')
 
   const env = generateEnv()
@@ -51,14 +52,14 @@ export const syncModels = async ({ debug }: { debug: number }) => {
      */
 
     for await (const table of introspectedTables) {
-      const existingModel = await prisma.model.findFirst({
+      const existingModel = await prisma.table.findFirst({
         where: {
           name: table.tablename,
-          schema_id: schemaRecord.id,
+          schemaId: schemaRecord.id,
         },
       })
 
-      const dmmfModel = dmmf.find((model) => model.name === table.tablename)
+      const dmmfModel = dmmf.find((model) => model.dbName === table.tablename)
       if (!dmmfModel) continue // This should never happen; all models present in the prisma dmmf should be present in the database
 
       const relations: Relations | undefined = dmmfModel.fields.reduce(
@@ -124,24 +125,24 @@ export const syncModels = async ({ debug }: { debug: number }) => {
       let modelRecord
 
       if (existingModel) {
-        modelRecord = await prisma.model.update({
+        modelRecord = await prisma.table.update({
           where: {
             id: existingModel.id,
           },
           data: {
             relations,
             name: table.tablename,
-            ui_name: table.tablename,
-            schema_id: schemaRecord.id,
+            schemaId: schemaRecord.id,
+            modelName: dmmfModel.name,
           },
         })
       } else {
-        modelRecord = await prisma.model.create({
+        modelRecord = await prisma.table.create({
           data: {
             relations,
             name: table.tablename,
-            ui_name: table.tablename,
-            schema_id: schemaRecord.id,
+            schemaId: schemaRecord.id,
+            modelName: dmmfModel.name,
           },
         })
       }
@@ -165,7 +166,7 @@ export const syncModels = async ({ debug }: { debug: number }) => {
         const existingField = await prisma.field.findFirst({
           where: {
             name: table.tablename,
-            model_id: schemaRecord.id,
+            tableId: schemaRecord.id,
           },
         })
 
@@ -177,7 +178,7 @@ export const syncModels = async ({ debug }: { debug: number }) => {
             data: {
               type: column.datatype,
               name: column.columnname,
-              model_id: existingField.id,
+              tableId: existingField.id,
             },
           })
         } else {
@@ -185,7 +186,7 @@ export const syncModels = async ({ debug }: { debug: number }) => {
             data: {
               type: column.datatype,
               name: column.columnname,
-              model_id: modelRecord.id,
+              tableId: modelRecord.id,
             },
           })
         }
@@ -195,8 +196,12 @@ export const syncModels = async ({ debug }: { debug: number }) => {
     // TODO: Schema versioning: https://linear.app/antarcticbloom/issue/AB-15/schema-versioning
 
     // TODO: Sync models that exist in the database but not in the schema:
-    // https://linear.app/antarcticbloom/issue/AB-14/create-innatemodels-tables-if-they-dont-exist-in-syncmodels-step
+    // https://linear.app/antarcticbloom/issue/AB-14/create-innatemodels-tables-if-they-dont-exist-in-syncTables-step
   }
+
+  await syncSchemaAnnotations({
+    prisma,
+  })
 
   if (debug <= DebugLevel.Info) stdout('✅ Models synced')
 }

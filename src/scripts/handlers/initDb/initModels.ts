@@ -29,12 +29,12 @@ export const initModels = async ({
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
 
-      CREATE TABLE IF NOT EXISTS model (
+      CREATE TABLE IF NOT EXISTS innate.table (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         schema_id UUID REFERENCES Schema(id) ON DELETE CASCADE,
 
-        name TEXT NOT NULL,
-        ui_name TEXT NOT NULL,
+        name TEXT NOT NULL, -- The name of the table in the database
+        model_name TEXT NOT NULL, -- The name of the model in the Prisma schema / GraphQL Schema
         relations JSONB DEFAULT NULL, -- Type: /innate/src/types/Relation.ts
 
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -43,7 +43,7 @@ export const initModels = async ({
 
       CREATE TABLE IF NOT EXISTS field (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        model_id UUID REFERENCES Model(id) ON DELETE CASCADE,
+        table_id UUID REFERENCES innate.table(id) ON DELETE CASCADE,
 
         name TEXT NOT NULL,
         type TEXT NOT NULL,

@@ -70,7 +70,7 @@ export abstract class VerifyEmailAddressResolver {
       )
     }
 
-    if (!userToUpdate.magic_link_token) {
+    if (!userToUpdate.magicLinkToken) {
       throw new Error('Token in magic link was used already')
     }
 
@@ -83,10 +83,10 @@ export abstract class VerifyEmailAddressResolver {
     if (
       // Timing-safe comparison requires equal byte lengths
       Buffer.from(token).length !==
-        Buffer.from(userToUpdate.magic_link_token).length ||
+        Buffer.from(userToUpdate.magicLinkToken).length ||
       !timingSafeEqual(
         Buffer.from(token),
-        Buffer.from(userToUpdate.magic_link_token),
+        Buffer.from(userToUpdate.magicLinkToken),
       )
     ) {
       throw new Error(
@@ -104,7 +104,7 @@ export abstract class VerifyEmailAddressResolver {
         id: user.id,
       },
       data: {
-        magic_link_token: null,
+        magicLinkToken: null,
       },
     })
   }
@@ -128,7 +128,7 @@ export abstract class VerifyEmailAddressResolver {
       },
       data: {
         verified: true,
-        magic_link_token: null,
+        magicLinkToken: null,
       },
     })
   }

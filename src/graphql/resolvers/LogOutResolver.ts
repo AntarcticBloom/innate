@@ -67,10 +67,10 @@ export abstract class LogOutResolver {
 
     const actualExpiration = dayjs.unix(decoded.exp!).toDate()
 
-    await prisma.revoked_refresh_token.create({
+    await prisma.revokedRefreshToken.create({
       data: {
+        actualExpiration,
         value: tokenValue,
-        actual_expiration: actualExpiration,
       },
     })
   }

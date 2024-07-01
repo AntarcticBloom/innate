@@ -1,5 +1,7 @@
+// ORDER MATTERS FOR THESE IMPORTS
 import 'core-js/proposals'
 import 'reflect-metadata'
+// ORDER MATTERS FOR THESE IMPORTS
 
 import path from 'path'
 import { watch } from 'fs'
@@ -7,13 +9,14 @@ import { Command } from 'commander'
 import pkg from '../../package.json'
 import { DebugLevel, generateUIEnv } from '../utils'
 import { stdout } from '../utils/cli/debug'
-import { syncModels } from './handlers/syncModels'
+import { syncTables } from './handlers/syncTables'
 import type { CLIOptions } from '../utils/cli/types'
 import {
   startUI,
   generateApi,
   introspectDb,
   annotatePrismaSchema,
+  formatPrismaSchemaCase,
 } from './handlers'
 import { parseCommandInt, parseDebugLevel } from '../utils/cli'
 import { waitForHealthcheck, killServerProcess } from '../test/utils'
@@ -44,9 +47,10 @@ program
   if (options.debug <= DebugLevel.Info) await stdout('👾 Running `dev`\n')
 
   await introspectDb(options)
+  await formatPrismaSchemaCase(options)
   await annotatePrismaSchema()
   await generateApi()
-  await syncModels({ debug: options.debug })
+  await syncTables({ debug: options.debug })
   await startServer({ options })
 
   generateUIEnv()

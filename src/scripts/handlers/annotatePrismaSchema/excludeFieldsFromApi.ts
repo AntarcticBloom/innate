@@ -1,54 +1,48 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import pkg from '../../../../package.json'
+import { generateEnv } from '../../../utils'
+import postgres, { type Sql } from 'postgres'
 
 export const excludeFieldsFromApi = async () => {
-  const hideFieldAnnotation = `/// @TypeGraphQL.omit(output: true)`
-
-  const innateFields = {
-    user: [
-      {
-        fieldName: 'hash',
-        annotation: hideFieldAnnotation,
-      },
-      { fieldName: 'salt', annotation: hideFieldAnnotation },
-    ],
-    administrator: [
-      {
-        fieldName: 'hash',
-        annotation: hideFieldAnnotation,
-      },
-      { fieldName: 'salt', annotation: hideFieldAnnotation },
-    ],
-  }
-
+  const env = generateEnv()
+  const sql = postgres(env.DATABASE_URL)
   const schemaPath = path.join(import.meta.dir, '../../../../schema.prisma')
 
   let schemaValue = fs.readFileSync(schemaPath, 'utf-8')
 
-  for (const [modelName, fields] of Object.entries(innateFields)) {
-    for (const [_, { fieldName, annotation }] of Object.entries(fields)) {
-      const [beforeModel, modelString, afterModel] = captureModel({
+  const annotations = await sql.unsafe(/* sql */ `
+    SELECT * FROM "${pkg.name}".field_annotation;
+  `)
+
+  for (const {
+    model_name: modelName,
+    field_name: fieldName,
+    annotation,
+  } of annotations) {
+    const [beforeModel, modelString, afterModel] = captureModel({
+      modelName,
+      schemaValue,
+    })
+
+    const [beforeAnnotation, annotatedFieldLine, afterAnnotation] =
+      captureField({
+        fieldName,
         modelName,
-        schemaValue,
+        modelString,
       })
 
-      const [beforeAnnotation, annotatedFieldLine, afterAnnotation] =
-        captureField({
-          fieldName,
-          modelName,
-          modelString,
-        })
+    const shouldNotDuplicateAnnotation = annotationAlreadyExists({
+      annotation,
+      annotatedFieldLine,
+      modelString,
+    })
 
-      /** Do not make modifications if annotation already exists, immediately preceding the field declaration */
-      if (
-        annotationAlreadyExists({ annotation, annotatedFieldLine, modelString })
-      )
-        continue
+    if (shouldNotDuplicateAnnotation) continue
 
-      const newModelValue = `${beforeAnnotation}  ${annotation}\n${annotatedFieldLine}${afterAnnotation}`
+    const newModelValue = `${beforeAnnotation}  ${annotation}\n${annotatedFieldLine}${afterAnnotation}`
 
-      schemaValue = `${beforeModel}${newModelValue}${afterModel}`
-    }
+    schemaValue = `${beforeModel}${newModelValue}${afterModel}`
   }
 
   fs.writeFileSync(schemaPath, schemaValue)
@@ -109,12 +103,16 @@ function annotationAlreadyExists({
   annotatedFieldLine: string
 }): boolean {
   const annotationRegEx = new RegExp(
-    `${annotation
-      .replace('(', '\\(')
-      .replace(')', '\\)')
-      .replace('.', '\\.')}\\n${annotatedFieldLine}`,
+    `${escapeRegExpCharacters(annotation)}\\n${escapeRegExpCharacters(
+      annotatedFieldLine,
+    )}`,
   )
+
   const annotationMatches = modelString.match(annotationRegEx)
 
   return !!annotationMatches
+}
+
+function escapeRegExpCharacters(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }

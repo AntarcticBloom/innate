@@ -19,83 +19,125 @@ generator typegraphql {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["innate", "public"]
+  schemas  = ["innate", "public", "v1"]
 }
 
-model administrator {
+/// @@TypeGraphQL.type(name: "Administrator")
+model Administrator {
+  id             String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
+  /// @TypeGraphQL.omit(output: true, input: true)
+  hash           String
+  /// @TypeGraphQL.omit(output: true, input: true)
+  salt           String
+  /// @TypeGraphQL.omit(output: true, input: true)
+  magicLinkToken String?  @map("magic_link_token")
+  email          String   @unique
+  banned         Boolean? @default(false)
+  username       String   @unique
+  verified       Boolean? @default(false)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamp(6)
+
+  @@map("administrator")
+  @@schema("innate")
+}
+
+/// @@TypeGraphQL.type(name: "Field")
+model Field {
+  id               String            @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
+  tableId          String?           @map("table_id") @db.Uuid
+  name             String
+  type             String
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt        DateTime          @default(now()) @map("updated_at") @db.Timestamp(6)
+  table            Table?            @relation(fields: [tableId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  fieldAnnotations FieldAnnotation[]
+
+  @@map("field")
+  @@schema("innate")
+}
+
+/// @@TypeGraphQL.type(name: "RevokedRefreshToken")
+model RevokedRefreshToken {
   id               String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
-  /// @TypeGraphQL.omit(output: true)
-  hash             String
-  /// @TypeGraphQL.omit(output: true)
-  salt             String
-  magic_link_token String?
-  email            String   @unique
-  banned           Boolean? @default(false)
-  username         String   @unique
-  verified         Boolean? @default(false)
-  created_at       DateTime @default(now()) @db.Timestamp(6)
-  updated_at       DateTime @default(now()) @db.Timestamp(6)
+  value            String   @unique
+  actualExpiration DateTime @default(now()) @map("actual_expiration") @db.Timestamp(6)
 
+  @@map("revoked_refresh_token")
   @@schema("innate")
 }
 
-model field {
+/// @@TypeGraphQL.type(name: "Schema")
+model Schema {
+  id        String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(6)
+  tables    Table[]
+
+  @@map("schema")
+  @@schema("innate")
+}
+
+/// @@TypeGraphQL.type(name: "Table")
+model Table {
+  id               String            @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
+  schemaId         String?           @map("schema_id") @db.Uuid
+  name             String
+  modelName        String            @map("model_name")
+  relations        Json?
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt        DateTime          @default(now()) @map("updated_at") @db.Timestamp(6)
+  fields           Field[]
+  fieldAnnotations FieldAnnotation[]
+  schema           Schema?           @relation(fields: [schemaId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("table")
+  @@schema("innate")
+}
+
+/// @@TypeGraphQL.type(name: "User")
+model User {
+  id             String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
+  /// @TypeGraphQL.omit(output: true, input: true)
+  hash           String
+  /// @TypeGraphQL.omit(output: true, input: true)
+  salt           String
+  /// @TypeGraphQL.omit(output: true, input: true)
+  magicLinkToken String?  @map("magic_link_token")
+  email          String   @unique
+  banned         Boolean? @default(false)
+  username       String   @unique
+  verified       Boolean? @default(false)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamp(6)
+
+  @@map("user")
+  @@schema("innate")
+}
+
+/// @@TypeGraphQL.type(name: "FieldAnnotation")
+model FieldAnnotation {
   id         String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
-  model_id   String?  @db.Uuid
-  name       String
-  type       String
-  created_at DateTime @default(now()) @db.Timestamp(6)
-  updated_at DateTime @default(now()) @db.Timestamp(6)
-  model      model?   @relation(fields: [model_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tableId    String?  @map("table_id") @db.Uuid
+  modelName  String   @map("model_name")
+  fieldId    String?  @map("field_id") @db.Uuid
+  fieldName  String   @map("field_name")
+  annotation String
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt  DateTime @default(now()) @map("updated_at") @db.Timestamp(6)
+  field      Field?   @relation(fields: [fieldId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  table      Table?   @relation(fields: [tableId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@map("field_annotation")
   @@schema("innate")
 }
 
-model model {
-  id         String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
-  schema_id  String?  @db.Uuid
-  name       String
-  ui_name    String
-  relations  Json?
-  created_at DateTime @default(now()) @db.Timestamp(6)
-  updated_at DateTime @default(now()) @db.Timestamp(6)
-  field      field[]
-  schema     schema?  @relation(fields: [schema_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model V1User {
+  id        String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(6)
 
-  @@schema("innate")
-}
-
-model revoked_refresh_token {
-  id                String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
-  value             String   @unique
-  actual_expiration DateTime @default(now()) @db.Timestamp(6)
-
-  @@schema("innate")
-}
-
-model schema {
-  id         String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
-  name       String   @unique
-  created_at DateTime @default(now()) @db.Timestamp(6)
-  updated_at DateTime @default(now()) @db.Timestamp(6)
-  model      model[]
-
-  @@schema("innate")
-}
-
-model user {
-  id               String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
-  /// @TypeGraphQL.omit(output: true)
-  hash             String
-  /// @TypeGraphQL.omit(output: true)
-  salt             String
-  magic_link_token String?
-  email            String   @unique
-  banned           Boolean? @default(false)
-  username         String   @unique
-  verified         Boolean? @default(false)
-  created_at       DateTime @default(now()) @db.Timestamp(6)
-  updated_at       DateTime @default(now()) @db.Timestamp(6)
-
-  @@schema("innate")
+  @@map("user")
+  @@schema("v1")
 }

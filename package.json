@@ -65,6 +65,7 @@
     "postgres": "^3.4.3",
     "postinstall-postinstall": "^2.1.0",
     "prisma": "latest",
+    "prisma-case-format": "^2.2.1",
     "react-dom": "18.2.0",
     "react-native-web": "~0.19.6",
     "reflect-metadata": "^0.2.1",

@@ -5,6 +5,7 @@ import pkg from '../../../../package.json'
 import { stdout } from '../../../utils/cli/debug'
 import { DebugLevel, generateEnv } from '../../../utils'
 import { initAdministrators } from './initAdministrators'
+import { initFieldAnnotations } from './fieldAnnotations'
 
 export const initDb = async ({
   debugLevel,
@@ -21,6 +22,12 @@ export const initDb = async ({
 
       if (message === 'relation "users" already exists, skipping')
         stdout('🤔 Relation "users" already exists, skipping...')
+
+      if (message === 'relation "model_annotations" already exists, skipping')
+        stdout('🤔 Relation "model_annotations" already exists, skipping...')
+
+      if (message === 'relation "field_annotations" already exists, skipping')
+        stdout('🤔 Relation "field_annotations" already exists, skipping...')
     },
   })
 
@@ -39,6 +46,13 @@ export const initDb = async ({
   })
 
   await initModels({
+    debugLevel,
+    spawnLevel,
+    connection: sql,
+    schema: pkg.name,
+  })
+
+  await initFieldAnnotations({
     debugLevel,
     spawnLevel,
     connection: sql,
