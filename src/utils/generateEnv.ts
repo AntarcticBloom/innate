@@ -12,7 +12,7 @@ export type Env = {
   TOKEN_SECRET: string
   INITIAL_ADMINISTRATOR_SECRET: string
 
-  SERVER_PORT: string
+  SERVER_PORT_RANGE_MIN: string
   ADMIN_SERVER_PORT_WEB: string
   ADMIN_SERVER_PORT_NATIVE: string
 
@@ -53,7 +53,7 @@ export const generateEnv = (path = ROOT_ENV_PATH) => {
     INITIAL_ADMINISTRATOR_SECRET,
     IP: CONFIGURED_IP,
 
-    SERVER_PORT,
+    SERVER_PORT_RANGE_MIN,
     ADMIN_SERVER_PORT_WEB,
     ADMIN_SERVER_PORT_NATIVE,
 
@@ -139,14 +139,14 @@ export const generateEnv = (path = ROOT_ENV_PATH) => {
       return INITIAL_ADMINISTRATOR_SECRET
     })(),
 
-    SERVER_PORT: (() => {
-      if (!SERVER_PORT) {
+    SERVER_PORT_RANGE_MIN: (() => {
+      if (!SERVER_PORT_RANGE_MIN) {
         throw new Error(
-          `The SERVER_PORT environment variable is missing. Please add it to your .env file. Format: <number>`,
+          `The SERVER_PORT_RANGE_MIN environment variable is missing. This value is the minimum value in the port range that Innate processes run on. Please add it to your .env file. Format: <number>`,
         )
       }
 
-      return SERVER_PORT
+      return SERVER_PORT_RANGE_MIN
     })(),
 
     ADMIN_SERVER_PORT_WEB: (() => {
@@ -236,3 +236,5 @@ export const generateEnv = (path = ROOT_ENV_PATH) => {
     })(),
   }
 }
+
+export const ENV = generateEnv()

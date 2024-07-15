@@ -1,0 +1,10 @@
+export { AdministratorCrudResolver } from "./Administrator/AdministratorCrudResolver";
+export { AuthorCrudResolver } from "./Author/AuthorCrudResolver";
+export { BookCrudResolver } from "./Book/BookCrudResolver";
+export { BookAuthorCrudResolver } from "./BookAuthor/BookAuthorCrudResolver";
+export { FieldCrudResolver } from "./Field/FieldCrudResolver";
+export { FieldAnnotationCrudResolver } from "./FieldAnnotation/FieldAnnotationCrudResolver";
+export { RevokedRefreshTokenCrudResolver } from "./RevokedRefreshToken/RevokedRefreshTokenCrudResolver";
+export { SchemaCrudResolver } from "./Schema/SchemaCrudResolver";
+export { TableCrudResolver } from "./Table/TableCrudResolver";
+export { UserCrudResolver } from "./User/UserCrudResolver";

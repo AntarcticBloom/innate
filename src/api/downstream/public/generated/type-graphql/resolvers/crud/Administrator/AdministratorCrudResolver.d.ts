@@ -1,0 +1,35 @@
+import type { GraphQLResolveInfo } from "graphql";
+import { AggregateAdministratorArgs } from "./args/AggregateAdministratorArgs";
+import { CreateManyAdministratorArgs } from "./args/CreateManyAdministratorArgs";
+import { CreateOneAdministratorArgs } from "./args/CreateOneAdministratorArgs";
+import { DeleteManyAdministratorArgs } from "./args/DeleteManyAdministratorArgs";
+import { DeleteOneAdministratorArgs } from "./args/DeleteOneAdministratorArgs";
+import { FindFirstAdministratorArgs } from "./args/FindFirstAdministratorArgs";
+import { FindFirstAdministratorOrThrowArgs } from "./args/FindFirstAdministratorOrThrowArgs";
+import { FindManyAdministratorArgs } from "./args/FindManyAdministratorArgs";
+import { FindUniqueAdministratorArgs } from "./args/FindUniqueAdministratorArgs";
+import { FindUniqueAdministratorOrThrowArgs } from "./args/FindUniqueAdministratorOrThrowArgs";
+import { GroupByAdministratorArgs } from "./args/GroupByAdministratorArgs";
+import { UpdateManyAdministratorArgs } from "./args/UpdateManyAdministratorArgs";
+import { UpdateOneAdministratorArgs } from "./args/UpdateOneAdministratorArgs";
+import { UpsertOneAdministratorArgs } from "./args/UpsertOneAdministratorArgs";
+import { Administrator } from "../../../models/Administrator";
+import { AdministratorGroupBy } from "../../outputs/AdministratorGroupBy";
+import { AffectedRowsOutput } from "../../outputs/AffectedRowsOutput";
+import { AggregateAdministrator } from "../../outputs/AggregateAdministrator";
+export declare class AdministratorCrudResolver {
+    aggregateAdministrator(ctx: any, info: GraphQLResolveInfo, args: AggregateAdministratorArgs): Promise<AggregateAdministrator>;
+    createManyAdministrator(ctx: any, info: GraphQLResolveInfo, args: CreateManyAdministratorArgs): Promise<AffectedRowsOutput>;
+    createOneAdministrator(ctx: any, info: GraphQLResolveInfo, args: CreateOneAdministratorArgs): Promise<Administrator>;
+    deleteManyAdministrator(ctx: any, info: GraphQLResolveInfo, args: DeleteManyAdministratorArgs): Promise<AffectedRowsOutput>;
+    deleteOneAdministrator(ctx: any, info: GraphQLResolveInfo, args: DeleteOneAdministratorArgs): Promise<Administrator | null>;
+    findFirstAdministrator(ctx: any, info: GraphQLResolveInfo, args: FindFirstAdministratorArgs): Promise<Administrator | null>;
+    findFirstAdministratorOrThrow(ctx: any, info: GraphQLResolveInfo, args: FindFirstAdministratorOrThrowArgs): Promise<Administrator | null>;
+    administrators(ctx: any, info: GraphQLResolveInfo, args: FindManyAdministratorArgs): Promise<Administrator[]>;
+    administrator(ctx: any, info: GraphQLResolveInfo, args: FindUniqueAdministratorArgs): Promise<Administrator | null>;
+    getAdministrator(ctx: any, info: GraphQLResolveInfo, args: FindUniqueAdministratorOrThrowArgs): Promise<Administrator | null>;
+    groupByAdministrator(ctx: any, info: GraphQLResolveInfo, args: GroupByAdministratorArgs): Promise<AdministratorGroupBy[]>;
+    updateManyAdministrator(ctx: any, info: GraphQLResolveInfo, args: UpdateManyAdministratorArgs): Promise<AffectedRowsOutput>;
+    updateOneAdministrator(ctx: any, info: GraphQLResolveInfo, args: UpdateOneAdministratorArgs): Promise<Administrator | null>;
+    upsertOneAdministrator(ctx: any, info: GraphQLResolveInfo, args: UpsertOneAdministratorArgs): Promise<Administrator>;
+}

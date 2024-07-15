@@ -1,7 +1,8 @@
+import chalk from 'chalk'
 import type { Sql } from 'postgres'
 import pkg from '../../../../package.json'
-import { stdout } from '../../../utils/cli/debug'
 import { DebugLevel } from '../../../utils'
+import { stdout } from '../../../utils/cli/debug'
 
 export const initUsers = async ({
   debugLevel,
@@ -15,7 +16,7 @@ export const initUsers = async ({
   debugLevel: DebugLevel
 }) => {
   if (debugLevel <= DebugLevel.Info)
-    await stdout('👨‍💻 Initializing Users table...')
+    await stdout(chalk.dim('👨‍💻 Initializing Users table...'))
 
   try {
     await connection.unsafe(/* sql */ `
@@ -37,7 +38,7 @@ export const initUsers = async ({
   `)
 
     if (debugLevel <= DebugLevel.Info)
-      stdout(`✅ Initialized Users table in ${schema} schema`)
+      stdout(chalk.dim(`✅ Initialized Users table in ${schema} schema`))
   } catch (error) {
     console.log({ error })
   }

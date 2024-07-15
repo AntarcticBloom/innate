@@ -1,18 +1,18 @@
 import fs from 'node:fs'
-import path from 'node:path'
-import pkg from '../../../../package.json'
-import { generateEnv } from '../../../utils'
-import postgres, { type Sql } from 'postgres'
+import postgres from 'postgres'
+import { ENV } from '../../../utils'
 
-export const excludeFieldsFromApi = async () => {
-  const env = generateEnv()
-  const sql = postgres(env.DATABASE_URL)
-  const schemaPath = path.join(import.meta.dir, '../../../../schema.prisma')
+export const excludeFieldsFromApi = async ({
+  schemaPath,
+}: {
+  schemaPath: string
+}) => {
+  const sql = postgres(ENV.DATABASE_URL)
 
   let schemaValue = fs.readFileSync(schemaPath, 'utf-8')
 
   const annotations = await sql.unsafe(/* sql */ `
-    SELECT * FROM "${pkg.name}".field_annotation;
+    SELECT * FROM "innate".field_annotation;
   `)
 
   for (const {

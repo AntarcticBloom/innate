@@ -1,5 +1,27 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@api": ["./src/api"],
+      "@api/*": ["./src/api/*"],
+
+      "@test": ["./src/test"],
+      "@test/*": ["./src/test/*"],
+
+      "@utils": ["./src/utils"],
+      "@utils/*": ["./src/utils/*'"],
+
+      "@cli": ["./src/utils/cli"],
+      "@cli/*": ["./src/utils/cli/*"],
+
+      "@config": ["./src/config"],
+      "@config/*": ["./src/config/*"],
+
+      "@scripts": ["./src/scripts"],
+      "@scripts/*": ["./src/scripts/*"],
+
+      "@shared": ["./src/api/shared"],
+      "@shared/*": ["./src/api/shared/*"]
+    },
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
@@ -22,5 +44,15 @@
       "bun-types" // add Bun global
     ]
   },
-  "include": ["src", "package.json", "setup-tests.ts"]
+  "include": [
+    "src",
+    "package.json",
+    "setup-tests.ts",
+    "codegen/admin/server.ts",
+    "src/api/admin/graphql",
+    "codegen/shared/cli",
+    "codegen/shared/utils/generateEnv.ts",
+    "codegen/shared/server/baseYogaProps.ts"
+  ],
+  "exclude": ["node_modules"]
 }

@@ -1,9 +1,14 @@
-import { stdout } from '../../../utils'
-import { addGeneratedComment, excludeFieldsFromApi } from '.'
+import ora from 'ora'
+import { excludeFieldsFromApi } from '.'
 
-export const annotatePrismaSchema = async () => {
-  await stdout('📝 Annotating Prisma schema...')
+export const annotatePrismaSchema = async ({
+  schemaPath,
+}: {
+  schemaPath: string
+}) => {
+  const spinner = ora('Annotating Prisma Schema').start()
+  await excludeFieldsFromApi({ schemaPath })
+  /** ... additional annotations */
 
-  await addGeneratedComment()
-  await excludeFieldsFromApi()
+  spinner.succeed('Prisma Schema annotated')
 }

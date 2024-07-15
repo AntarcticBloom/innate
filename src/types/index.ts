@@ -1,2 +1,2 @@
 export * from './Model'
-export * from './Context'
+export * from '../../codegen/downstream/types/Context'

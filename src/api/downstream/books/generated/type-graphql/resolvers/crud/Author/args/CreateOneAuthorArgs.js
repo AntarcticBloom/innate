@@ -1,0 +1,19 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CreateOneAuthorArgs = void 0;
+const tslib_1 = require("tslib");
+const TypeGraphQL = tslib_1.__importStar(require("type-graphql"));
+const AuthorCreateInput_1 = require("../../../inputs/AuthorCreateInput");
+let CreateOneAuthorArgs = class CreateOneAuthorArgs {
+    data;
+};
+exports.CreateOneAuthorArgs = CreateOneAuthorArgs;
+tslib_1.__decorate([
+    TypeGraphQL.Field(_type => AuthorCreateInput_1.AuthorCreateInput, {
+        nullable: false
+    }),
+    tslib_1.__metadata("design:type", AuthorCreateInput_1.AuthorCreateInput)
+], CreateOneAuthorArgs.prototype, "data", void 0);
+exports.CreateOneAuthorArgs = CreateOneAuthorArgs = tslib_1.__decorate([
+    TypeGraphQL.ArgsType()
+], CreateOneAuthorArgs);

@@ -1,3 +1,6 @@
 export * from './debug'
+export * from './types'
+export * from './textbox'
+export * from './printLogo'
 export * from './parseDebugLevel'
 export * from './parseSpawnLevel'

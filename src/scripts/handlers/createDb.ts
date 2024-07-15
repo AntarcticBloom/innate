@@ -1,23 +1,26 @@
 import {
+  CLIOptions,
   ERROR_REFERENCE,
   prettyPrintError,
   parseDatabaseConnectionString,
 } from '../../utils'
 import postgres from 'postgres'
 import pkg from '../../../package.json'
+import { ENV } from '../../utils/generateEnv'
 import { stdout } from '../../utils/cli/debug'
-import { generateEnv } from '../../utils/generateEnv'
 import { DebugLevel } from '../../utils/errors/types'
+import chalk from 'chalk'
 
 export const createDb = async ({
   debug,
+  options,
   spawnLevel,
 }: {
   debug: DebugLevel
   spawnLevel: number
+  options: CLIOptions
 }) => {
-  const env = generateEnv()
-  const databaseConnection = parseDatabaseConnectionString(env.DATABASE_URL)
+  const databaseConnection = parseDatabaseConnectionString(ENV.DATABASE_URL)
   const { databaseName, username, host, port } = databaseConnection
 
   /** Create the database */
@@ -34,32 +37,38 @@ export const createDb = async ({
     const originalError = createDbProcess.stderr.toString('utf-8')
 
     await prettyPrintError(
-      ERROR_REFERENCE.system.UnableToCreateDatabase({ originalError, env }),
+      ERROR_REFERENCE.system.UnableToCreateDatabase({
+        env: ENV,
+        originalError,
+      }),
     )
   }
 
-  if (debug <= DebugLevel.Info)
-    await stdout(`✅ Database created.\n✏️  Creating ${pkg.name} schema..`)
+  // await stdout(chalk.dim(`✅ Database created.`))
+  // await stdout(chalk.dim(`✏️ Creating \`innate\` schema...`))
 
   /** Install uuid extension */
-  const sql = postgres(env.DATABASE_URL, {
+  const sql = postgres(ENV.DATABASE_URL, {
     onnotice: ({ message }) => {
       if (message === 'extension "uuid-ossp" already exists, skipping')
-        stdout('🤔 Extension "uuid-ossp" already exists, skipping...')
+        stdout(
+          chalk.dim('🤔 Extension "uuid-ossp" already exists, skipping...'),
+        )
     },
   })
 
   /** Add system-identifying schema */
-  await sql.unsafe(`CREATE SCHEMA IF NOT EXISTS ${pkg.name};`)
-  await sql.unsafe(`SET search_path TO ${pkg.name};`)
+  await sql.unsafe(`CREATE SCHEMA IF NOT EXISTS innate;`)
+  await sql.unsafe(`SET search_path TO innate;`)
 
-  if (debug <= DebugLevel.Info)
-    await stdout(`✅ Schema created.\n✏️  Installing "uuid-ossp" extension...`)
+  // await stdout(chalk.dim(`✅ Schema created.`))
+  // await stdout(chalk.dim(`✏️ Installing "uuid-ossp" extension...`))
 
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`
 
-  if (debug <= DebugLevel.Info)
-    await stdout(`✅ "uuid-ossp" extension installed`)
+  // if (debug <= DebugLevel.Info)
+  //   await stdout(chalk.dim(`✅ "uuid-ossp" extension installed`))
 
   await sql.end()
+  options.spinner.stop()
 }

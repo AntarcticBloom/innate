@@ -1,0 +1,35 @@
+import type { GraphQLResolveInfo } from "graphql";
+import { AggregateFieldArgs } from "./args/AggregateFieldArgs";
+import { CreateManyFieldArgs } from "./args/CreateManyFieldArgs";
+import { CreateOneFieldArgs } from "./args/CreateOneFieldArgs";
+import { DeleteManyFieldArgs } from "./args/DeleteManyFieldArgs";
+import { DeleteOneFieldArgs } from "./args/DeleteOneFieldArgs";
+import { FindFirstFieldArgs } from "./args/FindFirstFieldArgs";
+import { FindFirstFieldOrThrowArgs } from "./args/FindFirstFieldOrThrowArgs";
+import { FindManyFieldArgs } from "./args/FindManyFieldArgs";
+import { FindUniqueFieldArgs } from "./args/FindUniqueFieldArgs";
+import { FindUniqueFieldOrThrowArgs } from "./args/FindUniqueFieldOrThrowArgs";
+import { GroupByFieldArgs } from "./args/GroupByFieldArgs";
+import { UpdateManyFieldArgs } from "./args/UpdateManyFieldArgs";
+import { UpdateOneFieldArgs } from "./args/UpdateOneFieldArgs";
+import { UpsertOneFieldArgs } from "./args/UpsertOneFieldArgs";
+import { Field } from "../../../models/Field";
+import { AffectedRowsOutput } from "../../outputs/AffectedRowsOutput";
+import { AggregateField } from "../../outputs/AggregateField";
+import { FieldGroupBy } from "../../outputs/FieldGroupBy";
+export declare class FieldCrudResolver {
+    aggregateField(ctx: any, info: GraphQLResolveInfo, args: AggregateFieldArgs): Promise<AggregateField>;
+    createManyField(ctx: any, info: GraphQLResolveInfo, args: CreateManyFieldArgs): Promise<AffectedRowsOutput>;
+    createOneField(ctx: any, info: GraphQLResolveInfo, args: CreateOneFieldArgs): Promise<Field>;
+    deleteManyField(ctx: any, info: GraphQLResolveInfo, args: DeleteManyFieldArgs): Promise<AffectedRowsOutput>;
+    deleteOneField(ctx: any, info: GraphQLResolveInfo, args: DeleteOneFieldArgs): Promise<Field | null>;
+    findFirstField(ctx: any, info: GraphQLResolveInfo, args: FindFirstFieldArgs): Promise<Field | null>;
+    findFirstFieldOrThrow(ctx: any, info: GraphQLResolveInfo, args: FindFirstFieldOrThrowArgs): Promise<Field | null>;
+    fields(ctx: any, info: GraphQLResolveInfo, args: FindManyFieldArgs): Promise<Field[]>;
+    field(ctx: any, info: GraphQLResolveInfo, args: FindUniqueFieldArgs): Promise<Field | null>;
+    getField(ctx: any, info: GraphQLResolveInfo, args: FindUniqueFieldOrThrowArgs): Promise<Field | null>;
+    groupByField(ctx: any, info: GraphQLResolveInfo, args: GroupByFieldArgs): Promise<FieldGroupBy[]>;
+    updateManyField(ctx: any, info: GraphQLResolveInfo, args: UpdateManyFieldArgs): Promise<AffectedRowsOutput>;
+    updateOneField(ctx: any, info: GraphQLResolveInfo, args: UpdateOneFieldArgs): Promise<Field | null>;
+    upsertOneField(ctx: any, info: GraphQLResolveInfo, args: UpsertOneFieldArgs): Promise<Field>;
+}

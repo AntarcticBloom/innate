@@ -1,0 +1,46 @@
+// ORDER MATTERS HERE
+import 'core-js/proposals'
+import 'reflect-metadata'
+// ORDER MATTERS HERE
+
+import { ENV } from '@utils'
+import { createYoga } from 'graphql-yoga'
+import { PrismaClient } from '@prisma/client'
+import { instantiateServer } from '@shared/server'
+import { type Context, baseYogaProps } from '@shared'
+import { administrativeSchema } from './graphql/schema' // won't resolve until copied to codegen destination
+
+startAdminServers({ debug: 1 })
+
+/**
+ * Only one instance of the admin server for each Native and Web is needed
+ */
+async function startAdminServers({ debug }: { debug: number }) {
+  const prisma = new PrismaClient()
+
+  const adminYoga = createYoga<{}, Context>({
+    schema: administrativeSchema,
+    graphiql: true,
+    ...baseYogaProps({ prisma, debug }),
+  })
+
+  Bun.serve(
+    instantiateServer({
+      serverInstance: adminYoga,
+      config: {
+        useTLS: true,
+        port: ENV.ADMIN_SERVER_PORT_WEB,
+      },
+    }),
+  )
+
+  Bun.serve(
+    instantiateServer({
+      serverInstance: adminYoga,
+      config: {
+        useTLS: false,
+        port: ENV.ADMIN_SERVER_PORT_NATIVE,
+      },
+    }),
+  )
+}

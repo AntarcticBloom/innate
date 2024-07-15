@@ -3,8 +3,9 @@ import {
   type InterceptedPrismaErrorCodes,
   type BaseInterceptedPrismaErrorRuntimeContext,
 } from './types'
-import { type InterceptedErrorContext } from '../types'
+import { ENV } from '../../generateEnv'
 import { ERROR_REFERENCE } from '../reference'
+import { type InterceptedErrorContext } from '../types'
 
 export const prismaErrorCodes: {
   [key in PrismaErrorCodes]: <
@@ -14,9 +15,9 @@ export const prismaErrorCodes: {
   ) => InterceptedErrorContext
 } = {
   [PrismaErrorCodes.P1003]: ({ originalError }) =>
-    ERROR_REFERENCE.prisma[PrismaErrorCodes.P1003]({ originalError }),
+    ERROR_REFERENCE.prisma[PrismaErrorCodes.P1003]({ originalError, env: ENV }),
   [PrismaErrorCodes.P4001]: ({ originalError }) =>
-    ERROR_REFERENCE.prisma[PrismaErrorCodes.P4001]({ originalError }),
+    ERROR_REFERENCE.prisma[PrismaErrorCodes.P4001]({ originalError, env: ENV }),
 }
 
 export const findPrismaErrorCode = (

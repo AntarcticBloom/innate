@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TableRelationsResolver = exports.SchemaRelationsResolver = exports.FieldAnnotationRelationsResolver = exports.FieldRelationsResolver = void 0;
+var FieldRelationsResolver_1 = require("./Field/FieldRelationsResolver");
+Object.defineProperty(exports, "FieldRelationsResolver", { enumerable: true, get: function () { return FieldRelationsResolver_1.FieldRelationsResolver; } });
+var FieldAnnotationRelationsResolver_1 = require("./FieldAnnotation/FieldAnnotationRelationsResolver");
+Object.defineProperty(exports, "FieldAnnotationRelationsResolver", { enumerable: true, get: function () { return FieldAnnotationRelationsResolver_1.FieldAnnotationRelationsResolver; } });
+var SchemaRelationsResolver_1 = require("./Schema/SchemaRelationsResolver");
+Object.defineProperty(exports, "SchemaRelationsResolver", { enumerable: true, get: function () { return SchemaRelationsResolver_1.SchemaRelationsResolver; } });
+var TableRelationsResolver_1 = require("./Table/TableRelationsResolver");
+Object.defineProperty(exports, "TableRelationsResolver", { enumerable: true, get: function () { return TableRelationsResolver_1.TableRelationsResolver; } });

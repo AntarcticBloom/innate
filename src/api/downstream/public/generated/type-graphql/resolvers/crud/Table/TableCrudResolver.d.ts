@@ -1,0 +1,35 @@
+import type { GraphQLResolveInfo } from "graphql";
+import { AggregateTableArgs } from "./args/AggregateTableArgs";
+import { CreateManyTableArgs } from "./args/CreateManyTableArgs";
+import { CreateOneTableArgs } from "./args/CreateOneTableArgs";
+import { DeleteManyTableArgs } from "./args/DeleteManyTableArgs";
+import { DeleteOneTableArgs } from "./args/DeleteOneTableArgs";
+import { FindFirstTableArgs } from "./args/FindFirstTableArgs";
+import { FindFirstTableOrThrowArgs } from "./args/FindFirstTableOrThrowArgs";
+import { FindManyTableArgs } from "./args/FindManyTableArgs";
+import { FindUniqueTableArgs } from "./args/FindUniqueTableArgs";
+import { FindUniqueTableOrThrowArgs } from "./args/FindUniqueTableOrThrowArgs";
+import { GroupByTableArgs } from "./args/GroupByTableArgs";
+import { UpdateManyTableArgs } from "./args/UpdateManyTableArgs";
+import { UpdateOneTableArgs } from "./args/UpdateOneTableArgs";
+import { UpsertOneTableArgs } from "./args/UpsertOneTableArgs";
+import { Table } from "../../../models/Table";
+import { AffectedRowsOutput } from "../../outputs/AffectedRowsOutput";
+import { AggregateTable } from "../../outputs/AggregateTable";
+import { TableGroupBy } from "../../outputs/TableGroupBy";
+export declare class TableCrudResolver {
+    aggregateTable(ctx: any, info: GraphQLResolveInfo, args: AggregateTableArgs): Promise<AggregateTable>;
+    createManyTable(ctx: any, info: GraphQLResolveInfo, args: CreateManyTableArgs): Promise<AffectedRowsOutput>;
+    createOneTable(ctx: any, info: GraphQLResolveInfo, args: CreateOneTableArgs): Promise<Table>;
+    deleteManyTable(ctx: any, info: GraphQLResolveInfo, args: DeleteManyTableArgs): Promise<AffectedRowsOutput>;
+    deleteOneTable(ctx: any, info: GraphQLResolveInfo, args: DeleteOneTableArgs): Promise<Table | null>;
+    findFirstTable(ctx: any, info: GraphQLResolveInfo, args: FindFirstTableArgs): Promise<Table | null>;
+    findFirstTableOrThrow(ctx: any, info: GraphQLResolveInfo, args: FindFirstTableOrThrowArgs): Promise<Table | null>;
+    tables(ctx: any, info: GraphQLResolveInfo, args: FindManyTableArgs): Promise<Table[]>;
+    table(ctx: any, info: GraphQLResolveInfo, args: FindUniqueTableArgs): Promise<Table | null>;
+    getTable(ctx: any, info: GraphQLResolveInfo, args: FindUniqueTableOrThrowArgs): Promise<Table | null>;
+    groupByTable(ctx: any, info: GraphQLResolveInfo, args: GroupByTableArgs): Promise<TableGroupBy[]>;
+    updateManyTable(ctx: any, info: GraphQLResolveInfo, args: UpdateManyTableArgs): Promise<AffectedRowsOutput>;
+    updateOneTable(ctx: any, info: GraphQLResolveInfo, args: UpdateOneTableArgs): Promise<Table | null>;
+    upsertOneTable(ctx: any, info: GraphQLResolveInfo, args: UpsertOneTableArgs): Promise<Table>;
+}

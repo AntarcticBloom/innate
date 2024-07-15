@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TableRelationsResolver = exports.SchemaRelationsResolver = exports.FieldAnnotationRelationsResolver = exports.FieldRelationsResolver = exports.BookAuthorRelationsResolver = exports.BookRelationsResolver = exports.AuthorRelationsResolver = void 0;
+var AuthorRelationsResolver_1 = require("./Author/AuthorRelationsResolver");
+Object.defineProperty(exports, "AuthorRelationsResolver", { enumerable: true, get: function () { return AuthorRelationsResolver_1.AuthorRelationsResolver; } });
+var BookRelationsResolver_1 = require("./Book/BookRelationsResolver");
+Object.defineProperty(exports, "BookRelationsResolver", { enumerable: true, get: function () { return BookRelationsResolver_1.BookRelationsResolver; } });
+var BookAuthorRelationsResolver_1 = require("./BookAuthor/BookAuthorRelationsResolver");
+Object.defineProperty(exports, "BookAuthorRelationsResolver", { enumerable: true, get: function () { return BookAuthorRelationsResolver_1.BookAuthorRelationsResolver; } });
+var FieldRelationsResolver_1 = require("./Field/FieldRelationsResolver");
+Object.defineProperty(exports, "FieldRelationsResolver", { enumerable: true, get: function () { return FieldRelationsResolver_1.FieldRelationsResolver; } });
+var FieldAnnotationRelationsResolver_1 = require("./FieldAnnotation/FieldAnnotationRelationsResolver");
+Object.defineProperty(exports, "FieldAnnotationRelationsResolver", { enumerable: true, get: function () { return FieldAnnotationRelationsResolver_1.FieldAnnotationRelationsResolver; } });
+var SchemaRelationsResolver_1 = require("./Schema/SchemaRelationsResolver");
+Object.defineProperty(exports, "SchemaRelationsResolver", { enumerable: true, get: function () { return SchemaRelationsResolver_1.SchemaRelationsResolver; } });
+var TableRelationsResolver_1 = require("./Table/TableRelationsResolver");
+Object.defineProperty(exports, "TableRelationsResolver", { enumerable: true, get: function () { return TableRelationsResolver_1.TableRelationsResolver; } });

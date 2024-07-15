@@ -1,3 +1,4 @@
+import ora from 'ora'
 import { Command } from 'commander'
 import pkg from '../../package.json'
 import { DebugLevel } from '../utils'
@@ -22,9 +23,15 @@ program
 
 const { debug, spawnLevel } = program.opts()
 
+const spinner = ora({
+  text: '👾 Running `createDb`\n',
+  discardStdin: false,
+}).start()
+
 if (debug <= DebugLevel.Info) await stdout('👾 Running `createDb`')
 
 await createDb({
   debug,
   spawnLevel,
+  options: { ...program.opts(), spinner },
 })

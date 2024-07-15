@@ -4,22 +4,21 @@ import 'reflect-metadata'
 // ORDER MATTERS FOR THESE IMPORTS
 
 import path from 'path'
-import { watch } from 'fs'
+import Listr from 'listr'
+import postgres from 'postgres'
+import { stdout } from '../utils'
 import { Command } from 'commander'
 import pkg from '../../package.json'
-import { DebugLevel, generateUIEnv } from '../utils'
-import { stdout } from '../utils/cli/debug'
+import { generateUIEnv } from '../utils'
+import { generateApis } from './handlers'
+import { startUIServer } from './handlers/server'
+import { detectSchemata, ENV } from '../utils'
 import { syncTables } from './handlers/syncTables'
+import { printLogo } from '../utils/cli/printLogo'
 import type { CLIOptions } from '../utils/cli/types'
-import {
-  startUI,
-  generateApi,
-  introspectDb,
-  annotatePrismaSchema,
-  formatPrismaSchemaCase,
-} from './handlers'
-import { parseCommandInt, parseDebugLevel } from '../utils/cli'
-import { waitForHealthcheck, killServerProcess } from '../test/utils'
+import { generateAdminApi } from './handlers/codegen'
+import { parseCommandInt, parseDebugLevel } from '@utils'
+import { pm } from '../api/processManager/ProcessManager'
 
 const program = new Command()
 
@@ -41,68 +40,28 @@ program
   )
   .parse()
 ;(async () => {
+  const sql = postgres(ENV.DATABASE_URL)
   const options = program.opts<CLIOptions>()
   options.cwd = path.join(import.meta.dir, '../../')
 
-  if (options.debug <= DebugLevel.Info) await stdout('👾 Running `dev`\n')
+  console.clear()
+  await printLogo()
 
-  await introspectDb(options)
-  await formatPrismaSchemaCase(options)
-  await annotatePrismaSchema()
-  await generateApi()
-  await syncTables({ debug: options.debug })
-  await startServer({ options })
+  stdout('\n🚀 Starting dev\n')
 
+  await detectSchemata({ sql, options })
+
+  await Promise.all([
+    generateApis({ options, sql }),
+    generateAdminApi({ options, sql }),
+  ])
+
+  await Promise.all([
+    syncTables({ debug: options.debug, sql }),
+    pm.start({ options }),
+  ])
+
+  await stdout('\n🚀 Starting UI server...\n')
   generateUIEnv()
-  await startUIServer({ options })
+  startUIServer(options)
 })()
-
-async function startServer({ options }: { options: CLIOptions }) {
-  Bun.spawn(
-    [
-      'dotenv',
-      '-e',
-      '.env.development',
-      'bun',
-      'run',
-      './src/scripts/handlers/server/server.ts',
-    ],
-    {
-      stdout: 'inherit',
-      cwd: options.cwd,
-    },
-  )
-
-  await waitForHealthcheck()
-}
-
-async function startUIServer({ options }: { options: CLIOptions }) {
-  if (options.debug <= DebugLevel.Info) await stdout('👾 Starting UI...\n')
-
-  const uiProcess = startUI({ debug: options.debug })
-
-  const watcher = watch(
-    path.join(import.meta.dir, '../../src/'),
-    { recursive: true },
-    async (_, filename) => {
-      if (!filename?.includes('generated/')) {
-        await killServerProcess()
-        uiProcess.kill()
-
-        watcher.close()
-
-        await startServer({ options })
-        await startUIServer({ options })
-      }
-    },
-  )
-
-  process.on('SIGINT', () => {
-    // close watcher when Ctrl-C is pressed
-    watcher.close()
-
-    process.exit(0)
-  })
-
-  return uiProcess
-}

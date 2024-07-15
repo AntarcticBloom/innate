@@ -1,0 +1,14 @@
+export { AggregateAdministratorArgs } from "./AggregateAdministratorArgs";
+export { CreateManyAdministratorArgs } from "./CreateManyAdministratorArgs";
+export { CreateOneAdministratorArgs } from "./CreateOneAdministratorArgs";
+export { DeleteManyAdministratorArgs } from "./DeleteManyAdministratorArgs";
+export { DeleteOneAdministratorArgs } from "./DeleteOneAdministratorArgs";
+export { FindFirstAdministratorArgs } from "./FindFirstAdministratorArgs";
+export { FindFirstAdministratorOrThrowArgs } from "./FindFirstAdministratorOrThrowArgs";
+export { FindManyAdministratorArgs } from "./FindManyAdministratorArgs";
+export { FindUniqueAdministratorArgs } from "./FindUniqueAdministratorArgs";
+export { FindUniqueAdministratorOrThrowArgs } from "./FindUniqueAdministratorOrThrowArgs";
+export { GroupByAdministratorArgs } from "./GroupByAdministratorArgs";
+export { UpdateManyAdministratorArgs } from "./UpdateManyAdministratorArgs";
+export { UpdateOneAdministratorArgs } from "./UpdateOneAdministratorArgs";
+export { UpsertOneAdministratorArgs } from "./UpsertOneAdministratorArgs";

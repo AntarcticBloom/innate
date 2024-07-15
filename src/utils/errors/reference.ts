@@ -1,10 +1,12 @@
 import {
-  SystemErrorCodes,
   type ErrorReference,
   parseDatabaseConnectionString,
   type BaseInterceptedPrismaErrorRuntimeContext,
 } from '../index'
+
+import { SystemErrorCodes } from './'
 import { PrismaErrorCodes } from './prisma'
+import { NodePostgresErrorCodes } from './nodePostgres'
 import { name as appName } from '../../../package.json'
 
 export const ERROR_REFERENCE: ErrorReference = {
@@ -32,6 +34,16 @@ export const ERROR_REFERENCE: ErrorReference = {
       ],
     }),
   },
+  nodePostgres: {
+    [NodePostgresErrorCodes['3D000']]: ({ env, originalError }) => ({
+      env,
+      originalError,
+      description: 'Database does not exist',
+      resolutions: [
+        'Ensure that the database specified in the DATABASE_URL environment variable exists',
+      ],
+    }),
+  },
   system: {
     [SystemErrorCodes.UnableToCreateDatabase]: ({
       env,
@@ -45,6 +57,18 @@ export const ERROR_REFERENCE: ErrorReference = {
         'Ensure that your database server is running and reachable at the host and port specified in the DATABASE_URL environment variable',
         'Ensure that the database user has permission to create databases',
         'Ensure that the database user has permission to connect to the database server',
+      ],
+    }),
+    [SystemErrorCodes.UnableToDetectSchemata]: ({
+      env,
+      originalError,
+    }: BaseInterceptedPrismaErrorRuntimeContext) => ({
+      env,
+      originalError,
+      description: 'Unable to detect schemata',
+      resolutions: [
+        'Ensure that the database server is running and reachable at the host and port specified in the DATABASE_URL environment variable in .env',
+        'Ensure that the database user has permission to list schemata',
       ],
     }),
     [SystemErrorCodes.UnableToIntrospectDatabase]: ({

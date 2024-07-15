@@ -1,7 +1,6 @@
-import postgres from 'postgres'
-import { DebugLevel, stdout } from '../../utils'
+import ora from 'ora'
+import { type Sql } from 'postgres'
 import { Prisma, PrismaClient } from '@prisma/client'
-import { generateEnv } from '../../utils/generateEnv'
 import type { Relations } from '../../types/Relation'
 import { syncSchemaAnnotations } from './initDb/syncSchemaAnnotations'
 
@@ -9,24 +8,34 @@ import { syncSchemaAnnotations } from './initDb/syncSchemaAnnotations'
  * Creates database records in schema.innate.models for all introspected models.
  * Used to power the UI.
  */
-export const syncTables = async ({ debug }: { debug: number }) => {
-  if (debug <= DebugLevel.Info) stdout('🔄 Syncing models...')
+export const syncTables = async ({
+  debug,
+  sql,
+}: {
+  debug: number
+  sql: Sql<{}>
+}) => {
+  const spinner = ora('Syncing models').start()
 
-  const env = generateEnv()
   const prisma = new PrismaClient()
-  const sql = postgres(env.DATABASE_URL)
+
   const dmmf = Prisma.dmmf.datamodel.models
 
   const schemata =
     await sql`SELECT schema_name FROM information_schema.schemata;`
 
-  const excludedSchemata = ['pg_toast', 'pg_catalog', 'information_schema']
+  const systemExcludedSchemata = [
+    'innate',
+    'pg_toast',
+    'pg_catalog',
+    'information_schema',
+  ]
 
   for await (const schema of schemata) {
     /**
      * Skip default PostgreSQL schemata
      */
-    if (excludedSchemata.includes(schema.schema_name)) continue
+    if (systemExcludedSchemata.includes(schema.schema_name)) continue
 
     /**
      * Upsert introspected schemata
@@ -192,16 +201,11 @@ export const syncTables = async ({ debug }: { debug: number }) => {
         }
       }
     }
-
-    // TODO: Schema versioning: https://linear.app/antarcticbloom/issue/AB-15/schema-versioning
-
-    // TODO: Sync models that exist in the database but not in the schema:
-    // https://linear.app/antarcticbloom/issue/AB-14/create-innatemodels-tables-if-they-dont-exist-in-syncTables-step
   }
 
   await syncSchemaAnnotations({
     prisma,
   })
 
-  if (debug <= DebugLevel.Info) stdout('✅ Models synced')
+  spinner.succeed('Models synced')
 }

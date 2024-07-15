@@ -1,0 +1,35 @@
+import type { GraphQLResolveInfo } from "graphql";
+import { AggregateBookAuthorArgs } from "./args/AggregateBookAuthorArgs";
+import { CreateManyBookAuthorArgs } from "./args/CreateManyBookAuthorArgs";
+import { CreateOneBookAuthorArgs } from "./args/CreateOneBookAuthorArgs";
+import { DeleteManyBookAuthorArgs } from "./args/DeleteManyBookAuthorArgs";
+import { DeleteOneBookAuthorArgs } from "./args/DeleteOneBookAuthorArgs";
+import { FindFirstBookAuthorArgs } from "./args/FindFirstBookAuthorArgs";
+import { FindFirstBookAuthorOrThrowArgs } from "./args/FindFirstBookAuthorOrThrowArgs";
+import { FindManyBookAuthorArgs } from "./args/FindManyBookAuthorArgs";
+import { FindUniqueBookAuthorArgs } from "./args/FindUniqueBookAuthorArgs";
+import { FindUniqueBookAuthorOrThrowArgs } from "./args/FindUniqueBookAuthorOrThrowArgs";
+import { GroupByBookAuthorArgs } from "./args/GroupByBookAuthorArgs";
+import { UpdateManyBookAuthorArgs } from "./args/UpdateManyBookAuthorArgs";
+import { UpdateOneBookAuthorArgs } from "./args/UpdateOneBookAuthorArgs";
+import { UpsertOneBookAuthorArgs } from "./args/UpsertOneBookAuthorArgs";
+import { BookAuthor } from "../../../models/BookAuthor";
+import { AffectedRowsOutput } from "../../outputs/AffectedRowsOutput";
+import { AggregateBookAuthor } from "../../outputs/AggregateBookAuthor";
+import { BookAuthorGroupBy } from "../../outputs/BookAuthorGroupBy";
+export declare class BookAuthorCrudResolver {
+    aggregateBookAuthor(ctx: any, info: GraphQLResolveInfo, args: AggregateBookAuthorArgs): Promise<AggregateBookAuthor>;
+    createManyBookAuthor(ctx: any, info: GraphQLResolveInfo, args: CreateManyBookAuthorArgs): Promise<AffectedRowsOutput>;
+    createOneBookAuthor(ctx: any, info: GraphQLResolveInfo, args: CreateOneBookAuthorArgs): Promise<BookAuthor>;
+    deleteManyBookAuthor(ctx: any, info: GraphQLResolveInfo, args: DeleteManyBookAuthorArgs): Promise<AffectedRowsOutput>;
+    deleteOneBookAuthor(ctx: any, info: GraphQLResolveInfo, args: DeleteOneBookAuthorArgs): Promise<BookAuthor | null>;
+    findFirstBookAuthor(ctx: any, info: GraphQLResolveInfo, args: FindFirstBookAuthorArgs): Promise<BookAuthor | null>;
+    findFirstBookAuthorOrThrow(ctx: any, info: GraphQLResolveInfo, args: FindFirstBookAuthorOrThrowArgs): Promise<BookAuthor | null>;
+    bookAuthors(ctx: any, info: GraphQLResolveInfo, args: FindManyBookAuthorArgs): Promise<BookAuthor[]>;
+    bookAuthor(ctx: any, info: GraphQLResolveInfo, args: FindUniqueBookAuthorArgs): Promise<BookAuthor | null>;
+    getBookAuthor(ctx: any, info: GraphQLResolveInfo, args: FindUniqueBookAuthorOrThrowArgs): Promise<BookAuthor | null>;
+    groupByBookAuthor(ctx: any, info: GraphQLResolveInfo, args: GroupByBookAuthorArgs): Promise<BookAuthorGroupBy[]>;
+    updateManyBookAuthor(ctx: any, info: GraphQLResolveInfo, args: UpdateManyBookAuthorArgs): Promise<AffectedRowsOutput>;
+    updateOneBookAuthor(ctx: any, info: GraphQLResolveInfo, args: UpdateOneBookAuthorArgs): Promise<BookAuthor | null>;
+    upsertOneBookAuthor(ctx: any, info: GraphQLResolveInfo, args: UpsertOneBookAuthorArgs): Promise<BookAuthor>;
+}

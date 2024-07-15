@@ -1,3 +1,4 @@
+import path from 'path'
 import {
   generateEnv,
   ERROR_REFERENCE,
@@ -6,15 +7,14 @@ import {
   findPrismaErrorCode,
   parseDatabaseConnectionString,
 } from '../../'
-import path from 'path'
+import chalk from 'chalk'
 import stripAnsi from 'strip-ansi'
 import { SyncSubprocess } from 'bun'
 import { DebugLevel } from '../types'
-import pkg from '../../../../package.json'
-import { type Env } from '../../generateEnv'
-import { type OptionValues } from 'commander'
 import { stdout } from '../../cli/debug'
+import { type Env } from '../../generateEnv'
 import { CLIOptions } from '../../cli/types'
+import { type OptionValues } from 'commander'
 
 type ErrorDrivenCodepath = {
   description: string
@@ -28,7 +28,7 @@ type ErrorDrivenCodepaths = {
 const errorDrivenCodepaths: ErrorDrivenCodepaths = {
   [PrismaErrorCodes.P1003]: {
     description: 'Database not found, create database',
-    run: async ({ commandOptions: { debug, spawnLevel, cwd } }) => {
+    run: async ({ commandOptions: { debug, spawnLevel, cwd, spinner } }) => {
       const environment = process.env.NODE_ENV || 'development'
 
       const env = generateEnv(
@@ -37,9 +37,8 @@ const errorDrivenCodepaths: ErrorDrivenCodepaths = {
 
       const { databaseName } = parseDatabaseConnectionString(env.DATABASE_URL)
 
-      await stdout(
-        `🤔 Database with name ${databaseName} not found.\n✏️  Creating database...`,
-      )
+      await stdout(chalk.dim(`Database with name ${databaseName} not found.`))
+      await stdout(chalk.dim(`Creating database ${databaseName}...`))
 
       const createDbProcess = Bun.spawnSync(
         [
@@ -61,7 +60,7 @@ const errorDrivenCodepaths: ErrorDrivenCodepaths = {
         handlePrismaCliError({
           env,
           stderr: originalError,
-          commandOptions: { debug, spawnLevel, cwd },
+          commandOptions: { debug, spawnLevel, cwd, spinner },
           childProcess: createDbProcess,
           onUnhandled: async () => {
             await prettyPrintError(
@@ -77,14 +76,18 @@ const errorDrivenCodepaths: ErrorDrivenCodepaths = {
   },
   [PrismaErrorCodes.P4001]: {
     description: 'Database empty, create default tables',
-    run: async ({ commandOptions: { debug, spawnLevel, cwd } }) => {
-      await stdout(`🤔 Database empty.\n✏️  Creating ${pkg.name} tables...`)
+    run: async ({ commandOptions: { debug, spawnLevel, cwd, spinner } }) => {
+      // await stdout(
+      //   chalk.dim(`🤔 Database empty.\n✏️  Creating innate tables...`),
+      // )
 
       const environment = process.env.NODE_ENV || 'development'
 
       const env = generateEnv(
         path.join(import.meta.dir, `../../../../.env.${environment}`),
       )
+
+      spinner.stop()
 
       const initDbProcess = Bun.spawnSync(
         [
@@ -106,7 +109,7 @@ const errorDrivenCodepaths: ErrorDrivenCodepaths = {
         await handlePrismaCliError({
           env,
           stderr: originalError,
-          commandOptions: { debug, spawnLevel, cwd },
+          commandOptions: { debug, spawnLevel, cwd, spinner },
           childProcess: initDbProcess,
           onUnhandled: async () => {
             await prettyPrintError(

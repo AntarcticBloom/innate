@@ -1,11 +1,13 @@
+import ora from 'ora'
+import chalk from 'chalk'
 import {
   ERROR_REFERENCE,
   prettyPrintError,
   PrismaErrorCodes,
   handlePrismaCliError,
 } from '../../utils/errors'
-import { stdout } from '../../utils/cli/debug'
 import { generateEnv } from '../../utils'
+import { stdout } from '../../utils/cli/debug'
 import type { CLIOptions } from '../../utils/cli/types'
 
 /**
@@ -15,9 +17,20 @@ import type { CLIOptions } from '../../utils/cli/types'
  * - If the database does not exist, create it.
  * - If the database is empty, create default tables.
  */
-export const introspectDb = async (options: CLIOptions) => {
+export const introspectDb = async (options: CLIOptions, apiDir: string) => {
+  const spinner = ora('Introspecting database\n\n').start()
+
   const introspectDbProcess = Bun.spawnSync(
-    ['bun', `--cwd=${options.cwd}`, 'run', 'introspect-db'], // TODO:
+    [
+      'bun',
+      `--cwd=${options.cwd}`,
+      'run',
+      'introspect-db',
+      '--',
+      '--',
+      `--schema`,
+      `${apiDir}/schema.prisma`,
+    ],
     {
       stdout: options.debug ? 'inherit' : 'ignore',
       cwd: options.cwd,
@@ -48,12 +61,12 @@ export const introspectDb = async (options: CLIOptions) => {
       [key in PrismaErrorCodes]: () => Promise<void>
     } = {
       [PrismaErrorCodes.P1003]: async () => {
-        await stdout(`👾 Retrying introspection...`)
-        await introspectDb(options)
+        await stdout(chalk.dim(`👾 Retrying introspection...`))
+        await introspectDb(options, apiDir)
       },
       [PrismaErrorCodes.P4001]: async () => {
-        await stdout(`👾 Retrying introspection...`)
-        await introspectDb(options)
+        await stdout(chalk.dim(`👾 Retrying introspection...`))
+        await introspectDb(options, apiDir)
       },
     }
 
@@ -61,5 +74,5 @@ export const introspectDb = async (options: CLIOptions) => {
     return process.exit(1)
   }
 
-  await stdout(`✅ Introspection complete!`)
+  spinner.succeed(`Introspection complete`)
 }

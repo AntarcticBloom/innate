@@ -2,6 +2,10 @@ import {
   PrismaErrorCodes,
   type BaseInterceptedPrismaErrorRuntimeContext,
 } from './prisma'
+import {
+  NodePostgresErrorCodes,
+  type BaseInterceptedNodePostgresErrorRuntimeContext,
+} from './nodePostgres'
 import { type Env } from '..'
 
 export type InterceptedErrorContext = {
@@ -38,6 +42,7 @@ export class InterceptedError extends Error {
 
 export enum SystemErrorCodes {
   UnableToCreateDatabase = 'UnableToCreateDatabase',
+  UnableToDetectSchemata = 'UnableToDetectSchemata',
   UnableToIntrospectDatabase = 'UnableToIntrospectDatabase',
   UnableToInitializeDatabase = 'UnableToInitializeDatabase',
 }
@@ -46,6 +51,11 @@ export type ErrorReference = {
   prisma: {
     [key in PrismaErrorCodes]: (
       runtimeContext: BaseInterceptedPrismaErrorRuntimeContext,
+    ) => InterceptedErrorContext
+  }
+  nodePostgres: {
+    [key in NodePostgresErrorCodes]: (
+      runtimeContext: BaseInterceptedNodePostgresErrorRuntimeContext /* | runtime contexts from other external services */,
     ) => InterceptedErrorContext
   }
   system: {

@@ -1,0 +1,14 @@
+export { AggregateBookAuthorArgs } from "./AggregateBookAuthorArgs";
+export { CreateManyBookAuthorArgs } from "./CreateManyBookAuthorArgs";
+export { CreateOneBookAuthorArgs } from "./CreateOneBookAuthorArgs";
+export { DeleteManyBookAuthorArgs } from "./DeleteManyBookAuthorArgs";
+export { DeleteOneBookAuthorArgs } from "./DeleteOneBookAuthorArgs";
+export { FindFirstBookAuthorArgs } from "./FindFirstBookAuthorArgs";
+export { FindFirstBookAuthorOrThrowArgs } from "./FindFirstBookAuthorOrThrowArgs";
+export { FindManyBookAuthorArgs } from "./FindManyBookAuthorArgs";
+export { FindUniqueBookAuthorArgs } from "./FindUniqueBookAuthorArgs";
+export { FindUniqueBookAuthorOrThrowArgs } from "./FindUniqueBookAuthorOrThrowArgs";
+export { GroupByBookAuthorArgs } from "./GroupByBookAuthorArgs";
+export { UpdateManyBookAuthorArgs } from "./UpdateManyBookAuthorArgs";
+export { UpdateOneBookAuthorArgs } from "./UpdateOneBookAuthorArgs";
+export { UpsertOneBookAuthorArgs } from "./UpsertOneBookAuthorArgs";

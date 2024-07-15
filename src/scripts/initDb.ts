@@ -1,7 +1,5 @@
 import { Command } from 'commander'
 import pkg from '../../package.json'
-import { DebugLevel } from '../utils'
-import { stdout } from '../utils/cli/debug'
 import { initDb } from './handlers/initDb'
 import { parseDebugLevel, parseCommandInt } from '../utils/cli'
 
@@ -23,8 +21,6 @@ program
   .parse()
 
 const { debug, spawnLevel } = program.opts()
-
-if (debug <= DebugLevel.Info) await stdout("👾 Running 'init-db'")
 
 await initDb({
   spawnLevel,

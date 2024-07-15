@@ -1,7 +1,8 @@
+import chalk from 'chalk'
 import type { Sql } from 'postgres'
 import pkg from '../../../../package.json'
-import { stdout } from '../../../utils/cli/debug'
 import { DebugLevel } from '../../../utils'
+import { stdout } from '../../../utils/cli/debug'
 
 export const initAdministrators = async ({
   debugLevel,
@@ -15,7 +16,7 @@ export const initAdministrators = async ({
   debugLevel: DebugLevel
 }) => {
   if (debugLevel <= DebugLevel.Info)
-    await stdout('👑 Initializing Administrators table...')
+    await stdout(chalk.dim('👑 Initializing Administrators table...'))
 
   try {
     await connection.unsafe(/* sql */ `
@@ -36,7 +37,9 @@ export const initAdministrators = async ({
   `)
 
     if (debugLevel <= DebugLevel.Info)
-      stdout(`✅ Initialized Administrators table in ${schema} schema`)
+      stdout(
+        chalk.dim(`✅ Initialized Administrators table in ${schema} schema`),
+      )
   } catch (error) {
     console.log({ error })
   }

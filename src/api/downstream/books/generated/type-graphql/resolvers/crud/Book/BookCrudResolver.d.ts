@@ -1,0 +1,35 @@
+import type { GraphQLResolveInfo } from "graphql";
+import { AggregateBookArgs } from "./args/AggregateBookArgs";
+import { CreateManyBookArgs } from "./args/CreateManyBookArgs";
+import { CreateOneBookArgs } from "./args/CreateOneBookArgs";
+import { DeleteManyBookArgs } from "./args/DeleteManyBookArgs";
+import { DeleteOneBookArgs } from "./args/DeleteOneBookArgs";
+import { FindFirstBookArgs } from "./args/FindFirstBookArgs";
+import { FindFirstBookOrThrowArgs } from "./args/FindFirstBookOrThrowArgs";
+import { FindManyBookArgs } from "./args/FindManyBookArgs";
+import { FindUniqueBookArgs } from "./args/FindUniqueBookArgs";
+import { FindUniqueBookOrThrowArgs } from "./args/FindUniqueBookOrThrowArgs";
+import { GroupByBookArgs } from "./args/GroupByBookArgs";
+import { UpdateManyBookArgs } from "./args/UpdateManyBookArgs";
+import { UpdateOneBookArgs } from "./args/UpdateOneBookArgs";
+import { UpsertOneBookArgs } from "./args/UpsertOneBookArgs";
+import { Book } from "../../../models/Book";
+import { AffectedRowsOutput } from "../../outputs/AffectedRowsOutput";
+import { AggregateBook } from "../../outputs/AggregateBook";
+import { BookGroupBy } from "../../outputs/BookGroupBy";
+export declare class BookCrudResolver {
+    aggregateBook(ctx: any, info: GraphQLResolveInfo, args: AggregateBookArgs): Promise<AggregateBook>;
+    createManyBook(ctx: any, info: GraphQLResolveInfo, args: CreateManyBookArgs): Promise<AffectedRowsOutput>;
+    createOneBook(ctx: any, info: GraphQLResolveInfo, args: CreateOneBookArgs): Promise<Book>;
+    deleteManyBook(ctx: any, info: GraphQLResolveInfo, args: DeleteManyBookArgs): Promise<AffectedRowsOutput>;
+    deleteOneBook(ctx: any, info: GraphQLResolveInfo, args: DeleteOneBookArgs): Promise<Book | null>;
+    findFirstBook(ctx: any, info: GraphQLResolveInfo, args: FindFirstBookArgs): Promise<Book | null>;
+    findFirstBookOrThrow(ctx: any, info: GraphQLResolveInfo, args: FindFirstBookOrThrowArgs): Promise<Book | null>;
+    books(ctx: any, info: GraphQLResolveInfo, args: FindManyBookArgs): Promise<Book[]>;
+    book(ctx: any, info: GraphQLResolveInfo, args: FindUniqueBookArgs): Promise<Book | null>;
+    getBook(ctx: any, info: GraphQLResolveInfo, args: FindUniqueBookOrThrowArgs): Promise<Book | null>;
+    groupByBook(ctx: any, info: GraphQLResolveInfo, args: GroupByBookArgs): Promise<BookGroupBy[]>;
+    updateManyBook(ctx: any, info: GraphQLResolveInfo, args: UpdateManyBookArgs): Promise<AffectedRowsOutput>;
+    updateOneBook(ctx: any, info: GraphQLResolveInfo, args: UpdateOneBookArgs): Promise<Book | null>;
+    upsertOneBook(ctx: any, info: GraphQLResolveInfo, args: UpsertOneBookArgs): Promise<Book>;
+}

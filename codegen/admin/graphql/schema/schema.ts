@@ -1,0 +1,16 @@
+import { resolvers as asyncResolvers } from './resolvers' // won't resolve until copied to codegen destination
+import { buildSchema, type NonEmptyArray } from 'type-graphql'
+import { isAdminAuthorized } from '../middleware/isAdminAuthorized' // won't resolve until copied to codegen destination
+
+export const administrativeSchema = async () => {
+  const resolvers: NonEmptyArray<Function> | NonEmptyArray<string> =
+    await asyncResolvers
+
+  const schema = await buildSchema({
+    resolvers,
+    validate: false,
+    authChecker: isAdminAuthorized,
+  })
+
+  return schema
+}

@@ -3,3 +3,4 @@ export * from './console'
 export * from './reference'
 
 export * from './prisma'
+export * from './nodePostgres'

@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import type { Sql } from 'postgres'
 import pkg from '../../../../package.json'
 import { DebugLevel } from '../../../utils'
@@ -16,7 +17,7 @@ export const initFieldAnnotations = async ({
   debugLevel: DebugLevel
 }) => {
   if (debugLevel <= DebugLevel.Info)
-    await stdout('📝 Initializing FieldAnnotations table...')
+    await stdout(chalk.dim('📝 Initializing FieldAnnotations table...'))
 
   try {
     await connection.unsafe(/* sql */ `
@@ -60,7 +61,9 @@ export const initFieldAnnotations = async ({
     }
 
     if (debugLevel <= DebugLevel.Info)
-      stdout(`✅ Initialized FieldAnnotations table in ${schema} schema`)
+      stdout(
+        chalk.dim(`✅ Initialized FieldAnnotations table in ${schema} schema`),
+      )
   } catch (error) {
     console.log({ error })
   }
