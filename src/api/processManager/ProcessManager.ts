@@ -23,7 +23,7 @@ class ProcessManager {
   }
 
   private async startAdminServers() {
-    await stdout('\n🚀 Starting admin servers')
+    await stdout('\n\n🚀 Starting admin servers')
 
     Bun.spawn(
       [

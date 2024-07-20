@@ -5216,6 +5216,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     tracked: boolean | null
+    baselineVersionOfSchema: string | null
     isNewestProductionVersion: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5225,6 +5226,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     tracked: boolean | null
+    baselineVersionOfSchema: string | null
     isNewestProductionVersion: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5234,6 +5236,7 @@ export namespace Prisma {
     id: number
     name: number
     tracked: number
+    baselineVersionOfSchema: number
     isNewestProductionVersion: number
     createdAt: number
     updatedAt: number
@@ -5245,6 +5248,7 @@ export namespace Prisma {
     id?: true
     name?: true
     tracked?: true
+    baselineVersionOfSchema?: true
     isNewestProductionVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -5254,6 +5258,7 @@ export namespace Prisma {
     id?: true
     name?: true
     tracked?: true
+    baselineVersionOfSchema?: true
     isNewestProductionVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -5263,6 +5268,7 @@ export namespace Prisma {
     id?: true
     name?: true
     tracked?: true
+    baselineVersionOfSchema?: true
     isNewestProductionVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -5345,6 +5351,7 @@ export namespace Prisma {
     id: string
     name: string
     tracked: boolean | null
+    baselineVersionOfSchema: string | null
     isNewestProductionVersion: boolean | null
     createdAt: Date
     updatedAt: Date
@@ -5371,6 +5378,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     tracked?: boolean
+    baselineVersionOfSchema?: boolean
     isNewestProductionVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5382,6 +5390,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     tracked?: boolean
+    baselineVersionOfSchema?: boolean
     isNewestProductionVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5402,6 +5411,7 @@ export namespace Prisma {
       id: string
       name: string
       tracked: boolean | null
+      baselineVersionOfSchema: string | null
       isNewestProductionVersion: boolean | null
       createdAt: Date
       updatedAt: Date
@@ -5803,6 +5813,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Schema", 'String'>
     readonly name: FieldRef<"Schema", 'String'>
     readonly tracked: FieldRef<"Schema", 'Boolean'>
+    readonly baselineVersionOfSchema: FieldRef<"Schema", 'String'>
     readonly isNewestProductionVersion: FieldRef<"Schema", 'Boolean'>
     readonly createdAt: FieldRef<"Schema", 'DateTime'>
     readonly updatedAt: FieldRef<"Schema", 'DateTime'>
@@ -8163,6 +8174,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     tracked: 'tracked',
+    baselineVersionOfSchema: 'baselineVersionOfSchema',
     isNewestProductionVersion: 'isNewestProductionVersion',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -8567,6 +8579,7 @@ export namespace Prisma {
     id?: UuidFilter<"Schema"> | string
     name?: StringFilter<"Schema"> | string
     tracked?: BoolNullableFilter<"Schema"> | boolean | null
+    baselineVersionOfSchema?: UuidNullableFilter<"Schema"> | string | null
     isNewestProductionVersion?: BoolNullableFilter<"Schema"> | boolean | null
     createdAt?: DateTimeFilter<"Schema"> | Date | string
     updatedAt?: DateTimeFilter<"Schema"> | Date | string
@@ -8577,6 +8590,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     tracked?: SortOrderInput | SortOrder
+    baselineVersionOfSchema?: SortOrderInput | SortOrder
     isNewestProductionVersion?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -8590,6 +8604,7 @@ export namespace Prisma {
     OR?: SchemaWhereInput[]
     NOT?: SchemaWhereInput | SchemaWhereInput[]
     tracked?: BoolNullableFilter<"Schema"> | boolean | null
+    baselineVersionOfSchema?: UuidNullableFilter<"Schema"> | string | null
     isNewestProductionVersion?: BoolNullableFilter<"Schema"> | boolean | null
     createdAt?: DateTimeFilter<"Schema"> | Date | string
     updatedAt?: DateTimeFilter<"Schema"> | Date | string
@@ -8600,6 +8615,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     tracked?: SortOrderInput | SortOrder
+    baselineVersionOfSchema?: SortOrderInput | SortOrder
     isNewestProductionVersion?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -8615,6 +8631,7 @@ export namespace Prisma {
     id?: UuidWithAggregatesFilter<"Schema"> | string
     name?: StringWithAggregatesFilter<"Schema"> | string
     tracked?: BoolNullableWithAggregatesFilter<"Schema"> | boolean | null
+    baselineVersionOfSchema?: UuidNullableWithAggregatesFilter<"Schema"> | string | null
     isNewestProductionVersion?: BoolNullableWithAggregatesFilter<"Schema"> | boolean | null
     createdAt?: DateTimeWithAggregatesFilter<"Schema"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Schema"> | Date | string
@@ -9046,6 +9063,7 @@ export namespace Prisma {
     id?: string
     name: string
     tracked?: boolean | null
+    baselineVersionOfSchema?: string | null
     isNewestProductionVersion?: boolean | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9056,6 +9074,7 @@ export namespace Prisma {
     id?: string
     name: string
     tracked?: boolean | null
+    baselineVersionOfSchema?: string | null
     isNewestProductionVersion?: boolean | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9066,6 +9085,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     tracked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    baselineVersionOfSchema?: NullableStringFieldUpdateOperationsInput | string | null
     isNewestProductionVersion?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9076,6 +9096,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     tracked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    baselineVersionOfSchema?: NullableStringFieldUpdateOperationsInput | string | null
     isNewestProductionVersion?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9086,6 +9107,7 @@ export namespace Prisma {
     id?: string
     name: string
     tracked?: boolean | null
+    baselineVersionOfSchema?: string | null
     isNewestProductionVersion?: boolean | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9095,6 +9117,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     tracked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    baselineVersionOfSchema?: NullableStringFieldUpdateOperationsInput | string | null
     isNewestProductionVersion?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9104,6 +9127,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     tracked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    baselineVersionOfSchema?: NullableStringFieldUpdateOperationsInput | string | null
     isNewestProductionVersion?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9591,6 +9615,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     tracked?: SortOrder
+    baselineVersionOfSchema?: SortOrder
     isNewestProductionVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -9600,6 +9625,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     tracked?: SortOrder
+    baselineVersionOfSchema?: SortOrder
     isNewestProductionVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -9609,6 +9635,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     tracked?: SortOrder
+    baselineVersionOfSchema?: SortOrder
     isNewestProductionVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10540,6 +10567,7 @@ export namespace Prisma {
     id?: string
     name: string
     tracked?: boolean | null
+    baselineVersionOfSchema?: string | null
     isNewestProductionVersion?: boolean | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10549,6 +10577,7 @@ export namespace Prisma {
     id?: string
     name: string
     tracked?: boolean | null
+    baselineVersionOfSchema?: string | null
     isNewestProductionVersion?: boolean | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10618,6 +10647,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     tracked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    baselineVersionOfSchema?: NullableStringFieldUpdateOperationsInput | string | null
     isNewestProductionVersion?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10627,6 +10657,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     tracked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    baselineVersionOfSchema?: NullableStringFieldUpdateOperationsInput | string | null
     isNewestProductionVersion?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

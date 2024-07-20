@@ -11,14 +11,14 @@ CREATE SCHEMA IF NOT EXISTS "books";
 SET search_path TO "books";
 
 CREATE TABLE IF NOT EXISTS author(
-	id UUID PRIMARY KEY DEFAULT "innate".uuid_generate_v4(), 
+	id UUID PRIMARY KEY DEFAULT "innate".uuid_generate_v4(),
 	name TEXT NOT NULL UNIQUE,
 	created_at TIMESTAMP NOT NULL DEFAULT NOW(), 
 	updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS book(
-	id UUID PRIMARY KEY DEFAULT "innate".uuid_generate_v4(), 
+	id UUID PRIMARY KEY DEFAULT "innate".uuid_generate_v4(),
 	name TEXT NOT NULL UNIQUE,
 	created_at TIMESTAMP NOT NULL DEFAULT NOW(), 
 	updated_at TIMESTAMP NOT NULL DEFAULT NOW()

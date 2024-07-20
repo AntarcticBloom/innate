@@ -1,1 +1,0 @@
-export { SchemaTablesArgs } from "./SchemaTablesArgs";

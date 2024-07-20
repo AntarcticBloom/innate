@@ -96,7 +96,7 @@ export abstract class SendAdminVerificationEmailResolver {
         },
         (err, info) => {
           console.log({ err, info })
-          if (err) throw new Error(err.message)
+          if (err) throw new GraphQLError(err.message)
         },
       )
     } catch (error) {

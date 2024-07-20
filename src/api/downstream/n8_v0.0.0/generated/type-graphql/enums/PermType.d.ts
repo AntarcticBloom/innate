@@ -1,0 +1,14 @@
+export declare enum PermType {
+    SELECT = "SELECT",
+    INSERT = "INSERT",
+    UPDATE = "UPDATE",
+    DELETE = "DELETE",
+    TRUNCATE = "TRUNCATE",
+    REFERENCES = "REFERENCES",
+    TRIGGER = "TRIGGER",
+    USAGE = "USAGE",
+    CREATE = "CREATE",
+    EXECUTE = "EXECUTE",
+    CONNECT = "CONNECT",
+    TEMPORARY = "TEMPORARY"
+}

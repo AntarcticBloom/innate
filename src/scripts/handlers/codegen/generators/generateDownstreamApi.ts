@@ -19,7 +19,15 @@ export const generateDownstreamApi = async ({
   /** The path within the downstream directory, usually a semver version in format `n8_v${semver}`; do not include the project path--only the path from src/api/downstream (i.e., v1.0.0) */
   downstreamPath: string
 }) => {
-  const spinner = ora(`Generating Downstream API ${downstreamPath}`).start()
+  console.log({ schemaName, downstreamPath })
+  /** PostgreSQL doesn't support '.' in schema names and so '_' is used instead; replace the _ with . */
+  const formattedDownstreamPath = downstreamPath.startsWith('n8_v')
+    ? `n8_v${downstreamPath.split('n8_v')[1].replaceAll('_', '.')}`
+    : downstreamPath
+
+  const spinner = ora(
+    `Generating Downstream API ${formattedDownstreamPath}`,
+  ).start()
 
   const TYPEGRAPHQL_CODEGEN_PATH = '/generated/type-graphql'
 
@@ -27,7 +35,7 @@ export const generateDownstreamApi = async ({
   fs.mkdirSync(
     join(
       import.meta.dir,
-      `../../../../../src/api/downstream/${downstreamPath}/${TYPEGRAPHQL_CODEGEN_PATH}`,
+      `../../../../../src/api/downstream/${formattedDownstreamPath}/${TYPEGRAPHQL_CODEGEN_PATH}`,
     ),
     { recursive: true },
   )
@@ -42,14 +50,14 @@ export const generateDownstreamApi = async ({
   fs.writeFileSync(
     join(
       import.meta.dir,
-      `../../../../../src/api/downstream/${downstreamPath}/schema.prisma`,
+      `../../../../../src/api/downstream/${formattedDownstreamPath}/schema.prisma`,
     ),
     prismaSchema,
   )
 
   const apiDirectory = join(
     import.meta.dir,
-    `../../../../api/downstream/${downstreamPath}`,
+    `../../../../api/downstream/${formattedDownstreamPath}`,
   )
 
   await introspectDb(options, apiDirectory)
@@ -68,7 +76,7 @@ export const generateDownstreamApi = async ({
 
   const codegenDest = `${join(
     import.meta.dir,
-    `../../../../api/downstream/${downstreamPath}/generated/innate`,
+    `../../../../api/downstream/${formattedDownstreamPath}/generated/innate`,
   )}`
 
   fs.readdirSync(codegenSrc).forEach((file) => {
@@ -95,5 +103,5 @@ export const generateDownstreamApi = async ({
     },
   )
 
-  spinner.succeed(`Generated Downstream API ${downstreamPath}`)
+  spinner.succeed(`Generated Downstream API ${formattedDownstreamPath}`)
 }

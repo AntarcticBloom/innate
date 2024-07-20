@@ -26,7 +26,9 @@ export const initModels = async ({
         name TEXT NOT NULL UNIQUE,
 
         tracked BOOLEAN DEFAULT NULL,
+        baseline_version_of_schema UUID DEFAULT NULL,
         is_newest_production_version BOOLEAN DEFAULT FALSE,
+
 
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -34,7 +36,7 @@ export const initModels = async ({
       );
 
       -- Ensure that only one row in the table has the column "is_newest_production_version" set to true
-      CREATE UNIQUE INDEX only_one_row_with_column_true_uix 
+      CREATE UNIQUE INDEX IF NOT EXISTS only_one_row_with_column_true_uix
         ON schema (is_newest_production_version) 
         WHERE (is_newest_production_version); -- Where is_newest_production_version is true
 

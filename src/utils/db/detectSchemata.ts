@@ -34,6 +34,13 @@ export async function detectSchemata({
     if (dbOnlyUsesPublicSchema)
       return await handlePublicSchema({ sql, spinner })
 
+    const [schemataExist] = await sql<
+      { id: string }[]
+    >`SELECT id FROM "innate".schema`
+
+    if (!schemataExist)
+      return await handleFirstRun({ sql, spinner, newSchemata })
+
     if (newSchemata.length)
       return await handleNewSchemata({
         sql,
@@ -85,11 +92,11 @@ async function handlePublicSchema({
     baselineSchema: 'public',
   })
 
-  spinner.succeed('Schemata recorded\n\n\n')
+  spinner.succeed('Schemata recorded\n')
   return
 }
 
-async function handleNewSchemata({
+async function handleFirstRun({
   sql,
   spinner,
   newSchemata,
@@ -98,11 +105,6 @@ async function handleNewSchemata({
   sql: Sql<{}>
   newSchemata: string[]
 }) {
-  spinner.prefixText = '🔍'
-  spinner.suffixText = chalk.dim(
-    `Detected ${newSchemata.length} new schemata in connected database`,
-  )
-
   spinner.stop()
 
   await textbox(
@@ -126,7 +128,7 @@ You will want to use Innate's tooling to collapse these schemata into a future v
   })
 
   await textbox(
-    "ℹ️ Innate needs to know which schema you consider to be the current or newest production schema. It will create a v0.0.0 API version for the schema you select. Additional schemata can be merged with Innate's tooling later.",
+    "ℹ️ Innate needs to know which schema you consider to be the current or newest production schema. It will create a v0.0.0 API version for the schema you select. Breaking changes you make via Innate's UI will create and spin up new versions of your API. Additional schemata can be merged with Innate's tooling later.",
   )
 
   const newestProductionSchema =
@@ -148,13 +150,6 @@ You will want to use Innate's tooling to collapse these schemata into a future v
     WHERE is_newest_production_version = TRUE
   `
 
-  spinner.stop()
-
-  await baselineNewSchema({
-    sql,
-    baselineSchema: newestProductionSchema,
-  })
-
   for await (const schema of newSchemata) {
     await sql`
       INSERT INTO innate.schema (name, tracked, is_newest_production_version)
@@ -168,7 +163,48 @@ You will want to use Innate's tooling to collapse these schemata into a future v
     `
   }
 
+  await baselineNewSchema({
+    sql,
+    baselineSchema: newestProductionSchema,
+  })
+
   return
+}
+
+async function handleNewSchemata({
+  sql,
+  spinner,
+  newSchemata,
+}: {
+  spinner: Ora
+  sql: Sql<{}>
+  newSchemata: string[]
+}) {
+  spinner.stop()
+
+  /**  Ask user whether innate should track each detected schema */
+  const userIncludedSchemata = await checkbox<string>({
+    required: true,
+    message: 'Which schema(ta) should innate track?',
+    choices: newSchemata.map((name: string) => ({
+      name,
+      value: name,
+    })),
+  })
+
+  for await (const schema of newSchemata) {
+    await sql`
+      INSERT INTO innate.schema (name, tracked, is_newest_production_version)
+      VALUES (
+        ${schema}, 
+        ${userIncludedSchemata.includes(schema)},
+        FALSE
+      )
+      ON CONFLICT (name) DO UPDATE
+      SET tracked = ${userIncludedSchemata.includes(schema)}
+    `
+  }
+
   // return spinner.succeed('Schemata recorded!\n\n\n')
 }
 
@@ -190,6 +226,9 @@ async function getNewSchemata(sql: Sql) {
   for await (const { name } of introspectedSchemata) {
     /** Don't allow innate schema to be tracked  */
     if (name === 'innate') continue
+
+    /** Skip innate-managed schemata */
+    if (name.startsWith('n8_v')) continue
 
     const [nameMatch] = await sql<{ name: string; tracked: boolean }[]>`
       SELECT name, tracked
@@ -227,11 +266,46 @@ async function baselineNewSchema({
     return process.exit(0)
   }
 
-  await sql.unsafe(`SET search_path TO ${baselineSchema}`)
+  /** PostgreSQL does not support . chars in table/schema names as in n8_v0.0.0 */
+  const v0SchemaName = `n8_v0_0_0`
 
-  /** Write the clone function to the innate database */
-  await sql.file(join(import.meta.dir, './cloneSchema.sql'))
-  await sql`SELECT clone_schema(${baselineSchema}, 'n8_v0.0.0', TRUE)`
+  try {
+    await sql.unsafe(`SET search_path TO ${baselineSchema}`)
+
+    await sql.file(join(import.meta.dir, './cloneSchema.sql'))
+
+    /** Clone the baseline schema as n8_v0.0.0 */
+    await sql`SELECT "innate".clone_schema(${baselineSchema}, ${v0SchemaName}, 'DATA')`
+
+    /** Get the id of the copied schema */
+    const [{ id: copiedSchemaId }] = await sql<{ id: string }[]>`
+      SELECT id FROM "innate".schema
+      WHERE name = ${baselineSchema}
+    `
+
+    /**
+     * Mark n8_v0.0.0 schema as a copy of the selected baselined schema;
+     * mark n8_v0_0_0 as the newest production version (remove that
+     * designation from the baselined schema first because of unique index).
+     * Mark the baselined schema as not tracked, since v0.0.0 is a copy and
+     * all future versions will be based on v0.0.0.
+     */
+
+    await sql`
+      UPDATE "innate".schema
+      SET (is_newest_production_version, tracked) = (FALSE, FALSE)
+      WHERE is_newest_production_version = TRUE;
+    `
+
+    await sql`
+      INSERT INTO "innate".schema
+        (name, tracked, is_newest_production_version, baseline_version_of_schema) 
+      VALUES 
+        (${v0SchemaName}, TRUE, TRUE, ${copiedSchemaId})
+    `
+  } catch (error) {
+    console.log({ error })
+  }
 }
 
 async function handleSchemataDetectionError({

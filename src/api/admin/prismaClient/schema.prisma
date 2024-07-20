@@ -13,7 +13,7 @@ generator typegraphql {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["innate", "public"]
+  schemas  = ["innate", "n8_v0_0_0"]
 }
 
 model Administrator {
@@ -78,6 +78,7 @@ model Schema {
   id                        String   @id @default(dbgenerated("innate.uuid_generate_v4()")) @db.Uuid
   name                      String   @unique
   tracked                   Boolean?
+  baselineVersionOfSchema   String?  @map("baseline_version_of_schema") @db.Uuid
   isNewestProductionVersion Boolean? @default(false) @map("is_newest_production_version")
   createdAt                 DateTime @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt                 DateTime @default(now()) @map("updated_at") @db.Timestamp(6)
@@ -120,4 +121,63 @@ model User {
 
   @@map("user")
   @@schema("innate")
+}
+
+enum Cloneparms {
+  DATA
+  NODATA
+  DDLONLY
+  NOOWNER
+  NOACL
+  VERBOSE
+  DEBUG
+  FILECOPY
+
+  @@map("cloneparms")
+  @@schema("n8_v0_0_0")
+}
+
+enum ObjType {
+  TABLE
+  VIEW
+  COLUMN
+  SEQUENCE
+  FUNCTION
+  SCHEMA
+  DATABASE
+
+  @@map("obj_type")
+  @@schema("n8_v0_0_0")
+}
+
+enum PermType {
+  SELECT
+  INSERT
+  UPDATE
+  DELETE
+  TRUNCATE
+  REFERENCES
+  TRIGGER
+  USAGE
+  CREATE
+  EXECUTE
+  CONNECT
+  TEMPORARY
+
+  @@map("perm_type")
+  @@schema("n8_v0_0_0")
+}
+
+enum Tabledefs {
+  PKEY_INTERNAL
+  PKEY_EXTERNAL
+  FKEYS_INTERNAL
+  FKEYS_EXTERNAL
+  COMMENTS
+  FKEYS_NONE
+  INCLUDE_TRIGGERS
+  NO_TRIGGERS
+
+  @@map("tabledefs")
+  @@schema("n8_v0_0_0")
 }
